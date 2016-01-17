@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
 
 
     protected void removeScannerFragment() {
+        if(scannerFragment == null) return;
         FragmentManager fm = getSupportFragmentManager();
         fm.beginTransaction()
                 .setCustomAnimations(fade_in, fade_out, fade_in, fade_out)
