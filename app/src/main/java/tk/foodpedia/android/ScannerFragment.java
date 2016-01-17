@@ -1,18 +1,13 @@
 package tk.foodpedia.android;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
-
-import static android.R.anim.fade_in;
-import static android.R.anim.fade_out;
 
 public class ScannerFragment extends Fragment {
     private OnScanCompletedListener onScanCompletedListener;
@@ -37,19 +32,8 @@ public class ScannerFragment extends Fragment {
                 button.setOnClickListener(null);
                 String barcode = ((EditText) v.findViewById(R.id.edit_text_barcode)).getText().toString();
                 onScanCompletedListener.onScanCompleted(barcode);
-                closeScanner();
             }
         });
         return v;
-    }
-
-
-    public void closeScanner() {
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        fm.beginTransaction()
-                .setCustomAnimations(fade_in, fade_out, fade_in, fade_out)
-                .remove(ScannerFragment.this)
-                .commit();
-        fm.popBackStack();
     }
 }
