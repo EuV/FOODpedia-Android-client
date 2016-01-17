@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FOODpedia</string>
+    <string name="find_product">Найти товар</string>
 </resources>
