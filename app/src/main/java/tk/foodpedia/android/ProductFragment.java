@@ -1,13 +1,16 @@
 package tk.foodpedia.android;
 
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class ProductFragment extends Fragment {
+public class ProductFragment extends Fragment implements LoaderManager.LoaderCallbacks<String> {
     private TextView textViewBarcode;
 
     public static ProductFragment newInstance() {
@@ -23,7 +26,32 @@ public class ProductFragment extends Fragment {
     }
 
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(0, new Bundle(), this);
+    }
+
+
+    @Override
+    public Loader<String> onCreateLoader(int id, Bundle bundle) {
+        return new DataLoader(getContext(), bundle);
+    }
+
+    // TODO: Handle redundant calling when screen rotation
+    @Override
+    public void onLoadFinished(Loader<String> loader, String data) {
+        textViewBarcode.setText(data);
+    }
+
+
+    @Override
+    public void onLoaderReset(Loader<String> loader) { /* */ }
+
+
     public void findProduct(String barcode) {
-        textViewBarcode.setText(barcode);
+        Bundle bundle = new Bundle();
+        bundle.putString(DataLoader.KEY_BARCODE, barcode);
+        getLoaderManager().restartLoader(0, bundle, this);
     }
 }

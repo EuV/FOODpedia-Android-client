@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
                 getSupportFragmentManager()
                         .beginTransaction()
                         .setCustomAnimations(fade_in, fade_out, fade_in, fade_out)
-                        .add(R.id.fragment_container, scannerFragment = new ScannerFragment())
+                        .replace(R.id.fragment_container, scannerFragment = new ScannerFragment())
                         .addToBackStack(null)
                         .commit();
                 hideFab();
