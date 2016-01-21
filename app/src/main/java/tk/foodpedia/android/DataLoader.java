@@ -12,10 +12,11 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Scanner;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
@@ -24,6 +25,23 @@ public class DataLoader extends AsyncTaskLoader<String> {
 
     private static final int CONNECT_TIMEOUT = 5000;
     private static final int READ_TIMEOUT = 5000;
+
+    private static final String CHARSET = "UTF-8";
+    private static final String SPARQL_ENDPOINT = "http://foodpedia.tk/sparql";
+    private static final String QUERY_PARAMETER = "?query=";
+    private static final String SAMPLE_QUERY_BODY = "select ?name, ?mass, ?ingredients, ?energy\n" +
+            "where {\n" +
+            "    ?s <http://purl.org/goodrelations/v1#hasEAN_UCC-13> '%s'.\n" +
+            "\n" +
+            "    OPTIONAL { ?s <http://purl.org/goodrelations/v1#name> ?name. }\n" +
+            "    OPTIONAL { ?s <http://foodpedia.tk/ontology#netto_mass> ?mass. }\n" +
+            "    OPTIONAL { ?s <http://foodpedia.tk/ontology#esl> ?ingredients. }\n" +
+            "    OPTIONAL { ?s <http://purl.org/foodontology#energyPer100gAsDouble> ?energy. }\n" +
+            "\n" +
+            "    #FILTER(langMatches(lang(?name), 'EN'))\n" +
+            "    #FILTER(langMatches(lang(?mass), 'EN'))\n" +
+            "    #FILTER(langMatches(lang(?ingredients), 'EN'))\n" +
+            "}";
 
     private final String barcode;
 
@@ -67,7 +85,7 @@ public class DataLoader extends AsyncTaskLoader<String> {
         InputStream is = null;
 
         try {
-            HttpsURLConnection connection = (HttpsURLConnection) new URL("https://www.google.ru").openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL(buildUrl()).openConnection();
             connection.setConnectTimeout(CONNECT_TIMEOUT);
             connection.setReadTimeout(READ_TIMEOUT);
             connection.connect();
@@ -83,8 +101,14 @@ public class DataLoader extends AsyncTaskLoader<String> {
     }
 
 
+    private String buildUrl() throws UnsupportedEncodingException {
+        return SPARQL_ENDPOINT + QUERY_PARAMETER
+                + URLEncoder.encode(String.format(SAMPLE_QUERY_BODY, barcode), CHARSET);
+    }
+
+
     private String convertStreamToString(InputStream is) {
-        Scanner scanner = new Scanner(is).useDelimiter("\\A");
+        Scanner scanner = new Scanner(is, CHARSET).useDelimiter("\\A");
         return scanner.hasNext() ? scanner.next() : "";
     }
 
