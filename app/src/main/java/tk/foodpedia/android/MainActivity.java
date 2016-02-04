@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
         setContentView(R.layout.activity_main);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
 
+        ToastHelper.init(this);
+
         FragmentManager fm = getSupportFragmentManager();
 
         if (savedInstanceState != null) {
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
 
 
     protected void removeScannerFragment() {
-        if(scannerFragment == null) return;
+        if (scannerFragment == null) return;
         FragmentManager fm = getSupportFragmentManager();
         fm.beginTransaction()
                 .setCustomAnimations(fade_in, fade_out, fade_in, fade_out)

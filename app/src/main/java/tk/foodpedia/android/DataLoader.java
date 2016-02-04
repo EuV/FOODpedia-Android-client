@@ -1,14 +1,11 @@
 package tk.foodpedia.android;
 
-
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.AsyncTaskLoader;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +58,7 @@ public class DataLoader extends AsyncTaskLoader<String> {
     @Override
     public String loadInBackground() {
         if (!hasConnection()) {
-            showWarning();
+            ToastHelper.show(R.string.error_no_network_connection);
             return null;
         }
 
@@ -110,16 +107,5 @@ public class DataLoader extends AsyncTaskLoader<String> {
     private String convertStreamToString(InputStream is) {
         Scanner scanner = new Scanner(is, CHARSET).useDelimiter("\\A");
         return scanner.hasNext() ? scanner.next() : "";
-    }
-
-
-    // TODO: Extract to helper
-    private void showWarning() {
-        new Handler(getContext().getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), R.string.error_no_network_connection, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 }
