@@ -4,71 +4,64 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.content.AsyncTaskLoader;
+
+import com.alibaba.fastjson.JSON;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Scanner;
 
+import tk.foodpedia.android.model.Downloadable;
+import tk.foodpedia.android.model.meta.ServerResponse;
+
 import static android.content.Context.CONNECTIVITY_SERVICE;
 
-public class DataLoader extends AsyncTaskLoader<String> {
-    public static final String KEY_BARCODE = "key_barcode";
+public class DataLoader extends AsyncTaskLoader<Downloadable> {
+    public static final String KEY_DOWNLOADABLE = "key_downloadable";
 
     private static final int CONNECT_TIMEOUT = 5000;
     private static final int READ_TIMEOUT = 5000;
-
-    private static final String CHARSET = "UTF-8";
     private static final String SPARQL_ENDPOINT = "http://foodpedia.tk/sparql";
     private static final String QUERY_PARAMETER = "?query=";
-    private static final String SAMPLE_QUERY_BODY = "select ?name, ?mass, ?ingredients, ?energy\n" +
-            "where {\n" +
-            "    ?s <http://purl.org/goodrelations/v1#hasEAN_UCC-13> '%s'.\n" +
-            "\n" +
-            "    OPTIONAL { ?s <http://purl.org/goodrelations/v1#name> ?name. }\n" +
-            "    OPTIONAL { ?s <http://foodpedia.tk/ontology#netto_mass> ?mass. }\n" +
-            "    OPTIONAL { ?s <http://foodpedia.tk/ontology#esl> ?ingredients. }\n" +
-            "    OPTIONAL { ?s <http://purl.org/foodontology#energyPer100gAsDouble> ?energy. }\n" +
-            "\n" +
-            "    #FILTER(langMatches(lang(?name), 'EN'))\n" +
-            "    #FILTER(langMatches(lang(?mass), 'EN'))\n" +
-            "    #FILTER(langMatches(lang(?ingredients), 'EN'))\n" +
-            "}";
 
-    private final String barcode;
+    private Downloadable downloadable;
 
-    public DataLoader(Context context, @NonNull Bundle bundle) {
+    public DataLoader(Context context, Bundle bundle) {
         super(context);
-        barcode = bundle.getString(KEY_BARCODE, null);
+        if (bundle == null) return;
+        downloadable = (Downloadable) bundle.get(KEY_DOWNLOADABLE);
     }
 
 
     @Override
     protected void onStartLoading() {
-        if (barcode == null) return;
+        if (downloadable == null || downloadable.isDownloaded()) return;
         forceLoad();
     }
 
 
     @Override
-    public String loadInBackground() {
+    public Downloadable loadInBackground() {
         if (!hasConnection()) {
             ToastHelper.show(R.string.error_no_network_connection);
-            return null;
+            return downloadable;
         }
 
-        String productData = null;
+        String data;
         try {
-            productData = fetchProductData();
+            data = download();
         } catch (IOException e) {
-            e.printStackTrace();
+            ToastHelper.show(R.string.error_failed_to_load_data);
+            return downloadable;
         }
-        return productData;
+
+        downloadable.downloaded();
+        ServerResponse sr = JSON.parseObject(data, ServerResponse.class);
+        return JSON.parseObject(sr.getPayload(), downloadable.getClass());
     }
 
 
@@ -78,11 +71,12 @@ public class DataLoader extends AsyncTaskLoader<String> {
     }
 
 
-    protected String fetchProductData() throws IOException {
+    protected String download() throws IOException {
         InputStream is = null;
 
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(buildUrl()).openConnection();
+            connection.setRequestProperty("Accept", "application/json");
             connection.setConnectTimeout(CONNECT_TIMEOUT);
             connection.setReadTimeout(READ_TIMEOUT);
             connection.connect();
@@ -98,14 +92,15 @@ public class DataLoader extends AsyncTaskLoader<String> {
     }
 
 
-    private String buildUrl() throws UnsupportedEncodingException {
-        return SPARQL_ENDPOINT + QUERY_PARAMETER
-                + URLEncoder.encode(String.format(SAMPLE_QUERY_BODY, barcode), CHARSET);
+    @SuppressWarnings("deprecation")
+    private String buildUrl() {
+        String query = convertStreamToString(getContext().getResources().openRawResource(downloadable.getQueryId()));
+        return SPARQL_ENDPOINT + QUERY_PARAMETER + URLEncoder.encode(String.format(query, downloadable.getQueryParams()));
     }
 
 
     private String convertStreamToString(InputStream is) {
-        Scanner scanner = new Scanner(is, CHARSET).useDelimiter("\\A");
+        Scanner scanner = new Scanner(is).useDelimiter("\\A");
         return scanner.hasNext() ? scanner.next() : "";
     }
 }

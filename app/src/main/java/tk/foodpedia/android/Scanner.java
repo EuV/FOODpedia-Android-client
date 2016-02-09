@@ -36,6 +36,7 @@ public class Scanner extends HandlerThread {
     public static Scanner getInstance(Handler callbackHandler, OnScanCompletedListener onScanCompletedListener, CameraPreview cameraPreview) {
         if (scannerInstance == null) {
             scannerInstance = new Scanner();
+            System.loadLibrary("iconv");
         }
 
         scannerInstance.onScanCompletedListener = onScanCompletedListener;

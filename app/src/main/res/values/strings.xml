@@ -5,5 +5,6 @@
 
     <string name="error_failed_to_open_camera">Не удаётся запустить камеру</string>
     <string name="error_failed_to_start_preview">Не удаётся начать предпросмотр изображения с камеры</string>
+    <string name="error_failed_to_load_data">Ошибка при загрузке данных</string>
     <string name="error_no_network_connection">Нет подключения к сети</string>
 </resources>
