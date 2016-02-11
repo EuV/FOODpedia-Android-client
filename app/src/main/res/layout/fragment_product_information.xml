@@ -7,10 +7,53 @@
     android:paddingTop="@dimen/activity_vertical_margin">
 
     <TextView
-        android:id="@+id/text_view_barcode"
+        android:id="@+id/product_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" />
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:tag="getName"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/product_ean"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/product_name"
+        android:layout_centerHorizontal="true"
+        android:tag="getEan"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/product_mass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/product_ean"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:tag="getMass"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/product_ingredients"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/product_mass"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:tag="getIngredients"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/product_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/product_ingredients"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:tag="getDescription"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

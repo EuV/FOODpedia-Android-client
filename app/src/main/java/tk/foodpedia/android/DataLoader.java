@@ -28,12 +28,11 @@ public class DataLoader extends AsyncTaskLoader<Downloadable> {
     private static final String SPARQL_ENDPOINT = "http://foodpedia.tk/sparql";
     private static final String QUERY_PARAMETER = "?query=";
 
-    private Downloadable downloadable;
+    private final Downloadable downloadable;
 
     public DataLoader(Context context, Bundle bundle) {
         super(context);
-        if (bundle == null) return;
-        downloadable = (Downloadable) bundle.get(KEY_DOWNLOADABLE);
+        downloadable = (bundle == null) ? null : (Downloadable) bundle.get(KEY_DOWNLOADABLE);
     }
 
 

@@ -8,7 +8,6 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import tk.foodpedia.android.model.Downloadable;
 import tk.foodpedia.android.model.Product;
@@ -48,8 +47,9 @@ public class ProductFragment extends Fragment implements LoaderManager.LoaderCal
 
     @SuppressWarnings("all")
     private void updateViews() {
-        if (product == null) return;
-        ((TextView) getView().findViewById(R.id.text_view_barcode)).setText(product.toString());
+        if (product != null) {
+            product.fill((ViewGroup) getView());
+        }
     }
 
 
