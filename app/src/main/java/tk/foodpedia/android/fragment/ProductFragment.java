@@ -1,23 +1,22 @@
 package tk.foodpedia.android.fragment;
 
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import tk.foodpedia.android.concurrent.DataLoader;
 import tk.foodpedia.android.R;
+import tk.foodpedia.android.concurrent.Loader;
 import tk.foodpedia.android.model.Downloadable;
 import tk.foodpedia.android.model.Product;
 
-public class ProductFragment extends Fragment implements LoaderManager.LoaderCallbacks<Downloadable> {
+public class ProductFragment extends LoaderFragment {
     private static final String KEY_PRODUCT = "key_product";
+    private static final String KEY_PRODUCT_ID = "key_product_id";
 
     private Product product;
+    private String product_id;
 
     public static ProductFragment newInstance() {
         return new ProductFragment();
@@ -31,19 +30,26 @@ public class ProductFragment extends Fragment implements LoaderManager.LoaderCal
 
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable(KEY_PRODUCT, product);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            product = (Product) savedInstanceState.get(KEY_PRODUCT);
+            product_id = savedInstanceState.getString(KEY_PRODUCT_ID);
+        }
+
+        if (product == null) {
+            loadProduct();
+        } else {
+            updateViews();
+        }
     }
 
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState != null) {
-            product = (Product) savedInstanceState.get(KEY_PRODUCT);
-        }
-        updateViews();
-        getLoaderManager().initLoader(0, null, this);
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(KEY_PRODUCT, product);
+        outState.putSerializable(KEY_PRODUCT_ID, product_id);
     }
 
 
@@ -54,27 +60,28 @@ public class ProductFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
 
-    @Override
-    public Loader<Downloadable> onCreateLoader(int id, Bundle bundle) {
-        return new DataLoader(getContext(), bundle);
+    public void findProduct(String barcode) {
+        product_id = barcode;
+        loadProduct();
+    }
+
+
+    private void loadProduct() {
+        if (product_id == null) return;
+        Loader.getInstance().load(this, Product.class, product_id, R.raw.query_product, false);
     }
 
 
     @Override
-    public void onLoadFinished(Loader<Downloadable> loader, Downloadable product) {
-        if (this.product == product) return;
-        this.product = (Product) product;
+    protected void onLoadFinished(Downloadable downloadable) {
+        if (downloadable == product) return;
+        this.product = (Product) downloadable;
         updateViews();
     }
 
 
     @Override
-    public void onLoaderReset(Loader<Downloadable> loader) { /* */ }
-
-
-    public void findProduct(String barcode) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(DataLoader.KEY_DOWNLOADABLE, new Product(barcode));
-        getLoaderManager().restartLoader(0, bundle, this);
+    public void onLoadFailed() {
+        // ...
     }
 }

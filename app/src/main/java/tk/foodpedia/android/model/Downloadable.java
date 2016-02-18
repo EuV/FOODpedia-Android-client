@@ -8,19 +8,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 public abstract class Downloadable implements Serializable {
-    private volatile boolean downloaded = false;
-
-    public abstract int getQueryId();
-
-    public abstract String[] getQueryParams();
-
-    public void downloaded() {
-        downloaded = true;
-    }
-
-    public boolean isDownloaded() {
-        return downloaded;
-    }
 
     public void fill(ViewGroup rootView) {
         for (int i = 0; i < rootView.getChildCount(); i++) {

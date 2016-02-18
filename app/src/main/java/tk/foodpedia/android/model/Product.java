@@ -1,6 +1,5 @@
 package tk.foodpedia.android.model;
 
-import tk.foodpedia.android.R;
 import tk.foodpedia.android.model.meta.DoubleValue;
 import tk.foodpedia.android.model.meta.StringValue;
 
@@ -14,24 +13,6 @@ public class Product extends Downloadable {
     private DoubleValue fat;
     private DoubleValue carbohydrates;
     private StringValue ingredients;
-
-    public Product() { /* */ }
-
-    public Product(String barcode) {
-        StringValue ean = new StringValue();
-        ean.setValue(barcode);
-        setEan(ean);
-    }
-
-    @Override
-    public int getQueryId() {
-        return R.raw.query_product;
-    }
-
-    @Override
-    public String[] getQueryParams() {
-        return new String[]{getEan()};
-    }
 
     public String getEan() {
         return ean == null ? null : ean.getValue();
