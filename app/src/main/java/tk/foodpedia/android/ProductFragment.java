@@ -45,7 +45,6 @@ public class ProductFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
 
-    @SuppressWarnings("all")
     private void updateViews() {
         if (product != null) {
             product.fill((ViewGroup) getView());

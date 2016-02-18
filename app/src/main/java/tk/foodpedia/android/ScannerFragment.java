@@ -2,7 +2,6 @@ package tk.foodpedia.android;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,8 +38,7 @@ public class ScannerFragment extends Fragment {
         });
 
         CameraPreview cameraPreview = ((CameraPreview) v.findViewById(R.id.camera_preview));
-        Handler callbackHandler = new Handler(getActivity().getMainLooper());
-        scanner = Scanner.getInstance(callbackHandler, onScanCompletedListener, cameraPreview);
+        scanner = Scanner.getInstance(onScanCompletedListener, cameraPreview);
 
         return v;
     }

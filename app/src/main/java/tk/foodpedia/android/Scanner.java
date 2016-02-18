@@ -21,7 +21,6 @@ public class Scanner extends HandlerThread {
     private static Scanner scannerInstance;
 
     private Handler scannerThreadHandler;
-    private Handler callbackHandler;
     private OnScanCompletedListener onScanCompletedListener;
     private CameraPreview cameraPreview;
     private Camera camera;
@@ -33,14 +32,13 @@ public class Scanner extends HandlerThread {
     }
 
 
-    public static Scanner getInstance(Handler callbackHandler, OnScanCompletedListener onScanCompletedListener, CameraPreview cameraPreview) {
+    public static Scanner getInstance(OnScanCompletedListener onScanCompletedListener, CameraPreview cameraPreview) {
         if (scannerInstance == null) {
             scannerInstance = new Scanner();
             System.loadLibrary("iconv");
         }
 
         scannerInstance.onScanCompletedListener = onScanCompletedListener;
-        scannerInstance.callbackHandler = callbackHandler;
         scannerInstance.cameraPreview = cameraPreview;
 
         return scannerInstance;
@@ -154,7 +152,7 @@ public class Scanner extends HandlerThread {
         }
 
         private void deliverResult(final String barcode) {
-            callbackHandler.post(new Runnable() {
+            App.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     onScanCompletedListener.onScanCompleted(barcode);

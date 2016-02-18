@@ -23,14 +23,15 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
     private ProductFragment productFragment;
     private ScannerFragment scannerFragment;
 
+    // Substitutes API 17 isDestroyed()
+    private boolean destroyed = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-
-        ToastHelper.init(this);
 
         FragmentManager fm = getSupportFragmentManager();
 
@@ -87,9 +88,17 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
 
     @Override
     public void onScanCompleted(String barcode) {
+        if (destroyed) return;
         productFragment.findProduct(barcode);
         removeScannerFragment();
         showFab();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        destroyed = true;
+        super.onDestroy();
     }
 
 
