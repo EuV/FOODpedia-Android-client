@@ -1,8 +1,6 @@
-package tk.foodpedia.android;
+package tk.foodpedia.android.concurrent;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.content.AsyncTaskLoader;
 
@@ -13,12 +11,13 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Scanner;
 
+import tk.foodpedia.android.R;
 import tk.foodpedia.android.model.Downloadable;
 import tk.foodpedia.android.model.meta.ServerResponse;
-
-import static android.content.Context.CONNECTIVITY_SERVICE;
+import tk.foodpedia.android.util.ConnectivityHelper;
+import tk.foodpedia.android.util.StringHelper;
+import tk.foodpedia.android.util.ToastHelper;
 
 public class DataLoader extends AsyncTaskLoader<Downloadable> {
     public static final String KEY_DOWNLOADABLE = "key_downloadable";
@@ -45,7 +44,7 @@ public class DataLoader extends AsyncTaskLoader<Downloadable> {
 
     @Override
     public Downloadable loadInBackground() {
-        if (!hasConnection()) {
+        if (!ConnectivityHelper.hasConnection()) {
             ToastHelper.show(R.string.error_no_network_connection);
             return downloadable;
         }
@@ -64,12 +63,6 @@ public class DataLoader extends AsyncTaskLoader<Downloadable> {
     }
 
 
-    protected boolean hasConnection() {
-        NetworkInfo info = ((ConnectivityManager) getContext().getSystemService(CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
-        return (info != null && info.isConnected());
-    }
-
-
     protected String download() throws IOException {
         InputStream is = null;
 
@@ -81,7 +74,7 @@ public class DataLoader extends AsyncTaskLoader<Downloadable> {
             connection.connect();
 
             is = connection.getInputStream();
-            return convertStreamToString(is);
+            return StringHelper.fromStream(is);
 
         } finally {
             if (is != null) {
@@ -93,13 +86,7 @@ public class DataLoader extends AsyncTaskLoader<Downloadable> {
 
     @SuppressWarnings("deprecation")
     private String buildUrl() {
-        String query = convertStreamToString(getContext().getResources().openRawResource(downloadable.getQueryId()));
+        String query = StringHelper.fromStream(getContext().getResources().openRawResource(downloadable.getQueryId()));
         return SPARQL_ENDPOINT + QUERY_PARAMETER + URLEncoder.encode(String.format(query, downloadable.getQueryParams()));
-    }
-
-
-    private String convertStreamToString(InputStream is) {
-        Scanner scanner = new Scanner(is).useDelimiter("\\A");
-        return scanner.hasNext() ? scanner.next() : "";
     }
 }

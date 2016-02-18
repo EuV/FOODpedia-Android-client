@@ -1,4 +1,4 @@
-package tk.foodpedia.android;
+package tk.foodpedia.android.fragment;
 
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import tk.foodpedia.android.concurrent.DataLoader;
+import tk.foodpedia.android.R;
 import tk.foodpedia.android.model.Downloadable;
 import tk.foodpedia.android.model.Product;
 

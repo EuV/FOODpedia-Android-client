@@ -1,4 +1,4 @@
-package tk.foodpedia.android;
+package tk.foodpedia.android.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,13 +9,14 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import tk.foodpedia.android.view.CameraPreview;
+import tk.foodpedia.android.R;
+import tk.foodpedia.android.concurrent.Scanner;
+import tk.foodpedia.android.concurrent.Scanner.OnScanCompletedListener;
+
 public class ScannerFragment extends Fragment {
     private OnScanCompletedListener onScanCompletedListener;
     private Scanner scanner;
-
-    public interface OnScanCompletedListener {
-        void onScanCompleted(String barcode);
-    }
 
     @Override
     public void onAttach(Context context) {

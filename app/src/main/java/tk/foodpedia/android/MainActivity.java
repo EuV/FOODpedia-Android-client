@@ -9,7 +9,9 @@ import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import tk.foodpedia.android.ScannerFragment.OnScanCompletedListener;
+import tk.foodpedia.android.fragment.ProductFragment;
+import tk.foodpedia.android.fragment.ScannerFragment;
+import tk.foodpedia.android.concurrent.Scanner.OnScanCompletedListener;
 
 import static android.R.anim.fade_in;
 import static android.R.anim.fade_out;

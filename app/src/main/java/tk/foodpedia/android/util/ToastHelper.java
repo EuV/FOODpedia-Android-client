@@ -1,9 +1,11 @@
-package tk.foodpedia.android;
+package tk.foodpedia.android.util;
 
 import android.support.annotation.StringRes;
 import android.widget.Toast;
 
-public class ToastHelper {
+import tk.foodpedia.android.App;
+
+public final class ToastHelper {
     private ToastHelper() { /* */ }
 
     public static void show(@StringRes int resId) {

@@ -1,4 +1,4 @@
-package tk.foodpedia.android;
+package tk.foodpedia.android.view;
 
 import android.content.Context;
 import android.hardware.Camera;

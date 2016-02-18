@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <tk.foodpedia.android.CameraPreview
+    <tk.foodpedia.android.view.CameraPreview
         android:id="@+id/camera_preview"
         android:layout_width="match_parent"
         android:layout_height="0dp" />

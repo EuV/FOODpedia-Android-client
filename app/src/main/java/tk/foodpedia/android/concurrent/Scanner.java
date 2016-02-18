@@ -1,4 +1,4 @@
-package tk.foodpedia.android;
+package tk.foodpedia.android.concurrent;
 
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
@@ -12,7 +12,10 @@ import net.sourceforge.zbar.Symbol;
 
 import java.io.IOException;
 
-import tk.foodpedia.android.ScannerFragment.OnScanCompletedListener;
+import tk.foodpedia.android.App;
+import tk.foodpedia.android.R;
+import tk.foodpedia.android.util.ToastHelper;
+import tk.foodpedia.android.view.CameraPreview;
 
 import static android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE;
 
@@ -24,6 +27,11 @@ public class Scanner extends HandlerThread {
     private OnScanCompletedListener onScanCompletedListener;
     private CameraPreview cameraPreview;
     private Camera camera;
+
+    public interface OnScanCompletedListener {
+        void onScanCompleted(String barcode);
+    }
+
 
     private Scanner() {
         super("ScannerThread");
