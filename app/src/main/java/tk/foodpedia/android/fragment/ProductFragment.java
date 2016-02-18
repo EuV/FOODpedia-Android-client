@@ -2,6 +2,8 @@ package tk.foodpedia.android.fragment;
 
 import android.support.annotation.Nullable;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +13,11 @@ import tk.foodpedia.android.concurrent.Loader;
 import tk.foodpedia.android.model.Downloadable;
 import tk.foodpedia.android.model.Product;
 
-public class ProductFragment extends LoaderFragment {
+public class ProductFragment extends LoaderFragment implements OnRefreshListener {
     private static final String KEY_PRODUCT = "key_product";
     private static final String KEY_PRODUCT_ID = "key_product_id";
+
+    private SwipeRefreshLayout refresher;
 
     private Product product;
     private String product_id;
@@ -25,7 +29,10 @@ public class ProductFragment extends LoaderFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_product_information, container, false);
+        View v = inflater.inflate(R.layout.fragment_product_information, container, false);
+        refresher = (SwipeRefreshLayout) v.findViewById(R.id.product_refresher);
+        refresher.setOnRefreshListener(this);
+        return v;
     }
 
 
@@ -39,7 +46,7 @@ public class ProductFragment extends LoaderFragment {
         }
 
         if (product == null) {
-            loadProduct();
+            loadProduct(false);
         } else {
             updateViews();
         }
@@ -53,27 +60,33 @@ public class ProductFragment extends LoaderFragment {
     }
 
 
+    @SuppressWarnings("all")
     private void updateViews() {
         if (product != null) {
-            product.fill((ViewGroup) getView());
+            product.fill((ViewGroup) getView().findViewById(R.id.product_views_container));
         }
     }
 
 
     public void findProduct(String barcode) {
         product_id = barcode;
-        loadProduct();
+        loadProduct(false);
     }
 
 
-    private void loadProduct() {
-        if (product_id == null) return;
-        Loader.getInstance().load(this, Product.class, product_id, R.raw.query_product, false);
+    private void loadProduct(boolean forced) {
+        if (product_id == null) {
+            animateLoading(false);
+        } else {
+            animateLoading(true);
+            Loader.getInstance().load(this, Product.class, product_id, R.raw.query_product, forced);
+        }
     }
 
 
     @Override
     protected void onLoadFinished(Downloadable downloadable) {
+        animateLoading(false);
         if (downloadable == product) return;
         this.product = (Product) downloadable;
         updateViews();
@@ -82,6 +95,26 @@ public class ProductFragment extends LoaderFragment {
 
     @Override
     public void onLoadFailed() {
-        // ...
+        animateLoading(false);
+    }
+
+
+    @Override
+    public void onRefresh() {
+        loadProduct(true);
+    }
+
+
+    /**
+     * This WA is needed since SwipeRefreshLayout tends to miss
+     * direct call of setRefreshing() in some cases.
+     */
+    private void animateLoading(final boolean refreshing) {
+        refresher.post(new Runnable() {
+            @Override
+            public void run() {
+                refresher.setRefreshing(refreshing);
+            }
+        });
     }
 }
