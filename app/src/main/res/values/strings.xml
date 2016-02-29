@@ -1,7 +1,13 @@
 <resources>
     <string name="app_name">FOODpedia</string>
+    <string name="app_site">foodpedia.tk</string>
 
     <string name="label_find_product">Найти товар</string>
+    <string name="label_product">Товар</string>
+    <string name="label_scanner">Сканер</string>
+    <string name="label_history">История</string>
+    <string name="label_settings">Настройки</string>
+    <string name="label_help">Справка</string>
 
     <string name="error_failed_to_open_camera">Не удаётся запустить камеру</string>
     <string name="error_failed_to_start_preview">Не удаётся начать предпросмотр изображения с камеры</string>

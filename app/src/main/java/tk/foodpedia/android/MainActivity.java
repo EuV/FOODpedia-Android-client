@@ -1,9 +1,15 @@
 package tk.foodpedia.android;
 
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -16,7 +22,7 @@ import tk.foodpedia.android.concurrent.Scanner.OnScanCompletedListener;
 import static android.R.anim.fade_in;
 import static android.R.anim.fade_out;
 
-public class MainActivity extends AppCompatActivity implements OnScanCompletedListener {
+public class MainActivity extends AppCompatActivity implements OnScanCompletedListener, OnNavigationItemSelectedListener {
     private static final String KEY_FAB_IS_HIDDEN = "key_fab_is_hidden";
     private static final String KEY_PRODUCT_FRAGMENT = "key_product_fragment";
     private static final String KEY_SCANNER_FRAGMENT = "key_scanner_fragment";
@@ -33,7 +39,16 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, 0, 0);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.drawer_menu);
+        navigationView.setNavigationItemSelectedListener(this);
 
         FragmentManager fm = getSupportFragmentManager();
 
@@ -79,6 +94,12 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
 
     @Override
     public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+            return;
+        }
+
         if (scannerFragment != null && scannerFragment.getUserVisibleHint()) {
             removeScannerFragment();
             showFab();
@@ -101,6 +122,23 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
     protected void onDestroy() {
         destroyed = true;
         super.onDestroy();
+    }
+
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_product:
+                // TODO
+                break;
+            case R.id.nav_scanner:
+                // TODO
+                break;
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
 
