@@ -3,7 +3,8 @@ package tk.foodpedia.android;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,24 +16,26 @@ import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import tk.foodpedia.android.fragment.ProductFragment;
 import tk.foodpedia.android.fragment.ScannerFragment;
 import tk.foodpedia.android.concurrent.Scanner.OnScanCompletedListener;
 
-import static android.R.anim.fade_in;
-import static android.R.anim.fade_out;
-
 public class MainActivity extends AppCompatActivity implements OnScanCompletedListener, OnNavigationItemSelectedListener {
     private static final String KEY_FAB_IS_HIDDEN = "key_fab_is_hidden";
-    private static final String KEY_PRODUCT_FRAGMENT = "key_product_fragment";
-    private static final String KEY_SCANNER_FRAGMENT = "key_scanner_fragment";
+    private static final Map<Class, Integer> FRAGMENT_MENU_ID = new HashMap<>();
 
-    private boolean fabIsHidden;
-    private ProductFragment productFragment;
-    private ScannerFragment scannerFragment;
+    static {
+        FRAGMENT_MENU_ID.put(ProductFragment.class, R.id.nav_product);
+        FRAGMENT_MENU_ID.put(ScannerFragment.class, R.id.nav_scanner);
+    }
 
-    // Substitutes API 17 isDestroyed()
-    private boolean destroyed = false;
+    private NavigationView drawerMenu;
+
+    private boolean fabIsHidden = true;
+    private boolean activityDestroyed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,20 +50,14 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.drawer_menu);
-        navigationView.setNavigationItemSelectedListener(this);
+        drawerMenu = (NavigationView) findViewById(R.id.drawer_menu);
+        drawerMenu.setNavigationItemSelectedListener(this);
 
-        FragmentManager fm = getSupportFragmentManager();
-
-        if (savedInstanceState != null) {
-            productFragment = (ProductFragment) fm.getFragment(savedInstanceState, KEY_PRODUCT_FRAGMENT);
-            scannerFragment = (ScannerFragment) fm.getFragment(savedInstanceState, KEY_SCANNER_FRAGMENT);
+        if (savedInstanceState == null) {
+            placeFragment(ProductFragment.newInstance(null));
+            placeFragment(ScannerFragment.newInstance());
+        } else {
             fabIsHidden = savedInstanceState.getBoolean(KEY_FAB_IS_HIDDEN);
-        }
-
-        if (productFragment == null) {
-            productFragment = ProductFragment.newInstance();
-            fm.beginTransaction().add(R.id.fragment_container, productFragment).commit();
         }
 
         if (fabIsHidden) findViewById(R.id.fab).setVisibility(View.GONE);
@@ -69,13 +66,7 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
             @Override
             public void onClick(final View view) {
                 if (fabIsHidden) return;
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(fade_in, fade_out, fade_in, fade_out)
-                        .replace(R.id.fragment_container, scannerFragment = new ScannerFragment())
-                        .addToBackStack(null)
-                        .commit();
-                hideFab();
+                placeFragment(ScannerFragment.newInstance());
             }
         });
     }
@@ -85,10 +76,6 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(KEY_FAB_IS_HIDDEN, fabIsHidden);
-        getSupportFragmentManager().putFragment(outState, KEY_PRODUCT_FRAGMENT, productFragment);
-        if (scannerFragment != null) {
-            getSupportFragmentManager().putFragment(outState, KEY_SCANNER_FRAGMENT, scannerFragment);
-        }
     }
 
 
@@ -100,27 +87,24 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
             return;
         }
 
-        if (scannerFragment != null && scannerFragment.getUserVisibleHint()) {
-            removeScannerFragment();
-            showFab();
+        if (removeTopFragment()) {
             return;
         }
+
         super.onBackPressed();
     }
 
 
     @Override
     public void onScanCompleted(String barcode) {
-        if (destroyed) return;
-        productFragment.findProduct(barcode);
-        removeScannerFragment();
-        showFab();
+        if (activityDestroyed) return;
+        placeFragment(ProductFragment.newInstance(barcode));
     }
 
 
     @Override
     protected void onDestroy() {
-        destroyed = true;
+        activityDestroyed = true;
         super.onDestroy();
     }
 
@@ -129,10 +113,10 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_product:
-                // TODO
+                placeFragment(ProductFragment.newInstance(null));
                 break;
             case R.id.nav_scanner:
-                // TODO
+                placeFragment(ScannerFragment.newInstance());
                 break;
         }
 
@@ -142,19 +126,51 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
     }
 
 
-    protected void removeScannerFragment() {
-        if (scannerFragment == null) return;
-        FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction()
-                .setCustomAnimations(fade_in, fade_out, fade_in, fade_out)
-                .remove(scannerFragment)
-                .commit();
-        fm.popBackStack();
-        scannerFragment = null;
+    protected void placeFragment(Fragment newFragment) {
+        if (newFragment == null) return;
+
+        Fragment topFragment = getTopFragment();
+        if (topFragment != null && topFragment.getClass() == newFragment.getClass()) {
+            return;
+        }
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, newFragment);
+
+        if (newFragment instanceof ScannerFragment) {
+            transaction.addToBackStack(null);
+            hideFab();
+        } else {
+            removeTopFragment();
+        }
+
+        transaction.commit();
+
+        drawerMenu.setCheckedItem(FRAGMENT_MENU_ID.get(newFragment.getClass()));
+    }
+
+
+    protected boolean removeTopFragment() {
+        boolean fragmentPopped = getSupportFragmentManager().popBackStackImmediate();
+
+        if (fragmentPopped) {
+            Class topFragmentClass = getTopFragment().getClass();
+            drawerMenu.setCheckedItem(FRAGMENT_MENU_ID.get(topFragmentClass));
+            if (topFragmentClass != ScannerFragment.class) showFab();
+            return true;
+        }
+
+        return false;
+    }
+
+
+    protected Fragment getTopFragment() {
+        return getSupportFragmentManager().findFragmentById(R.id.fragment_container);
     }
 
 
     protected void hideFab() {
+        if (fabIsHidden) return;
         Animation disappear = AnimationUtils.makeOutAnimation(this, true);
         disappear.setFillAfter(true);
         findViewById(R.id.fab).startAnimation(disappear);
@@ -163,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
 
 
     protected void showFab() {
+        if (!fabIsHidden) return;
         Animation appear = AnimationUtils.makeInAnimation(this, false);
         appear.setFillAfter(true);
         findViewById(R.id.fab).setVisibility(View.VISIBLE);

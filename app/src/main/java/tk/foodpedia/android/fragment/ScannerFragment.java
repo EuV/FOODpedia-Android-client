@@ -18,6 +18,11 @@ public class ScannerFragment extends Fragment {
     private OnScanCompletedListener onScanCompletedListener;
     private Scanner scanner;
 
+    public static ScannerFragment newInstance() {
+        return new ScannerFragment();
+    }
+
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

@@ -22,8 +22,19 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
     private Product product;
     private String product_id;
 
-    public static ProductFragment newInstance() {
-        return new ProductFragment();
+    public static ProductFragment newInstance(@Nullable String barcode) {
+        Bundle args = new Bundle();
+        args.putString(KEY_PRODUCT_ID, barcode);
+        ProductFragment fragment = new ProductFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        product_id = getArguments().getString(KEY_PRODUCT_ID);
     }
 
 
@@ -65,12 +76,6 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
         if (product != null) {
             product.fill((ViewGroup) getView().findViewById(R.id.product_views_container));
         }
-    }
-
-
-    public void findProduct(String barcode) {
-        product_id = barcode;
-        loadProduct(false);
     }
 
 
