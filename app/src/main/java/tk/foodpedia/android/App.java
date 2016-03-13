@@ -9,6 +9,7 @@ public class App extends Application {
     private static Thread uiThread;
     private static Context context;
     private static Handler handler;
+    private static String lastProductId;
 
     @Override
     public void onCreate() {
@@ -28,5 +29,13 @@ public class App extends Application {
         } else {
             handler.post(action);
         }
+    }
+
+    public static String getLastProductId() {
+        return lastProductId;
+    }
+
+    public static void setLastProductId(String lastProductId) {
+        App.lastProductId = lastProductId;
     }
 }

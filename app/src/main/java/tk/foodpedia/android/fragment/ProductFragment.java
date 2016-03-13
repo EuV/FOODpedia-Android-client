@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import tk.foodpedia.android.App;
 import tk.foodpedia.android.R;
 import tk.foodpedia.android.concurrent.Loader;
 import tk.foodpedia.android.model.Downloadable;
@@ -20,7 +21,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
     private SwipeRefreshLayout refresher;
 
     private Product product;
-    private String product_id;
+    private String productId;
 
     public static ProductFragment newInstance(@Nullable String barcode) {
         Bundle args = new Bundle();
@@ -34,13 +35,30 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        product_id = getArguments().getString(KEY_PRODUCT_ID);
+
+        if (savedInstanceState != null) {
+            product = (Product) savedInstanceState.get(KEY_PRODUCT);
+            productId = savedInstanceState.getString(KEY_PRODUCT_ID);
+            return;
+        }
+
+        productId = getArguments().getString(KEY_PRODUCT_ID);
+        if (productId == null) {
+            productId = App.getLastProductId();
+        } else {
+            App.setLastProductId(productId);
+        }
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setTitle(R.string.label_product);
+
+        if (productId == null) {
+            return null;
+        }
+
         View v = inflater.inflate(R.layout.fragment_product, container, false);
         refresher = (SwipeRefreshLayout) v.findViewById(R.id.product_refresher);
         refresher.setOnRefreshListener(this);
@@ -52,12 +70,6 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            product = (Product) savedInstanceState.get(KEY_PRODUCT);
-            product_id = savedInstanceState.getString(KEY_PRODUCT_ID);
-        }
-
         if (product == null) {
             loadProduct(false);
         } else {
@@ -69,7 +81,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable(KEY_PRODUCT, product);
-        outState.putSerializable(KEY_PRODUCT_ID, product_id);
+        outState.putSerializable(KEY_PRODUCT_ID, productId);
     }
 
 
@@ -82,11 +94,11 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
 
 
     private void loadProduct(boolean forced) {
-        if (product_id == null) {
+        if (productId == null) {
             animateLoading(false);
         } else {
             animateLoading(true);
-            Loader.getInstance().load(this, Product.class, product_id, R.raw.query_product, forced);
+            Loader.getInstance().load(this, Product.class, productId, R.raw.query_product, forced);
         }
     }
 
@@ -95,7 +107,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
     protected void onLoadFinished(Downloadable downloadable) {
         animateLoading(false);
         if (downloadable == product) return;
-        this.product = (Product) downloadable;
+        product = (Product) downloadable;
         updateViews();
     }
 
@@ -117,6 +129,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
      * direct call of setRefreshing() in some cases.
      */
     private void animateLoading(final boolean refreshing) {
+        if (refresher == null) return;
         refresher.post(new Runnable() {
             @Override
             public void run() {
