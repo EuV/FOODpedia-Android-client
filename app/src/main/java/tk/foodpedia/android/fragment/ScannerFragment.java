@@ -2,7 +2,6 @@ package tk.foodpedia.android.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,7 +13,7 @@ import tk.foodpedia.android.R;
 import tk.foodpedia.android.concurrent.Scanner;
 import tk.foodpedia.android.concurrent.Scanner.OnScanCompletedListener;
 
-public class ScannerFragment extends Fragment {
+public class ScannerFragment extends BaseFragment {
     private OnScanCompletedListener onScanCompletedListener;
     private Scanner scanner;
 
@@ -32,6 +31,8 @@ public class ScannerFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setTitle(R.string.label_scanner);
+
         final View v = inflater.inflate(R.layout.fragment_scanner, container, false);
 
         v.findViewById(R.id.button_find_product).setOnClickListener(new OnClickListener() {

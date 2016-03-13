@@ -19,9 +19,12 @@ import android.view.animation.AnimationUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+import tk.foodpedia.android.fragment.HelpFragment;
+import tk.foodpedia.android.fragment.HistoryFragment;
 import tk.foodpedia.android.fragment.ProductFragment;
 import tk.foodpedia.android.fragment.ScannerFragment;
 import tk.foodpedia.android.concurrent.Scanner.OnScanCompletedListener;
+import tk.foodpedia.android.fragment.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity implements OnScanCompletedListener, OnNavigationItemSelectedListener {
     private static final String KEY_FAB_IS_HIDDEN = "key_fab_is_hidden";
@@ -30,6 +33,9 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
     static {
         FRAGMENT_MENU_ID.put(ProductFragment.class, R.id.nav_product);
         FRAGMENT_MENU_ID.put(ScannerFragment.class, R.id.nav_scanner);
+        FRAGMENT_MENU_ID.put(HistoryFragment.class, R.id.nav_history);
+        FRAGMENT_MENU_ID.put(SettingsFragment.class, R.id.nav_settings);
+        FRAGMENT_MENU_ID.put(HelpFragment.class, R.id.nav_help);
     }
 
     private NavigationView drawerMenu;
@@ -117,6 +123,15 @@ public class MainActivity extends AppCompatActivity implements OnScanCompletedLi
                 break;
             case R.id.nav_scanner:
                 placeFragment(ScannerFragment.newInstance());
+                break;
+            case R.id.nav_history:
+                placeFragment(HistoryFragment.newInstance());
+                break;
+            case R.id.nav_settings:
+                placeFragment(SettingsFragment.newInstance());
+                break;
+            case R.id.nav_help:
+                placeFragment(HelpFragment.newInstance());
                 break;
         }
 
