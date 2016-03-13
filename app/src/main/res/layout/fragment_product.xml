@@ -1,4 +1,5 @@
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/product_refresher"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -7,66 +8,55 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/product_views_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin">
 
             <TextView
-                android:id="@+id/product_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="10dp"
+                style="@style/TextTitle"
                 android:gravity="center"
-                android:tag="getName"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:tag="getName"/>
+
+            <View
+                style="@style/HorizontalDivider"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"/>
 
             <TextView
-                android:id="@+id/product_ean"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/product_name"
-                android:layout_centerHorizontal="true"
-                android:tag="getEan"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                style="@style/TextMain"
+                android:tag="getMassFormatted"/>
 
             <TextView
-                android:id="@+id/product_mass"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/product_ean"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="10dp"
-                android:tag="getMass"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                style="@style/TextMain"
+                android:text="@string/label_per_100_g"/>
 
             <TextView
-                android:id="@+id/product_ingredients"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/product_mass"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="10dp"
-                android:tag="getIngredients"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                style="@style/TextMain"
+                android:tag="getProteinsFormatted"/>
 
             <TextView
-                android:id="@+id/product_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/product_ingredients"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="10dp"
-                android:tag="getDescription"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                style="@style/TextMain"
+                android:tag="getFatFormatted"/>
 
-        </RelativeLayout>
+            <TextView
+                style="@style/TextMain"
+                android:tag="getCarbohydratesFormatted"/>
+
+            <TextView
+                style="@style/TextMain"
+                android:tag="getEnergyFormatted"/>
+
+            <TextView
+                style="@style/TextMain"
+                android:tag="getIngredientsFormatted"/>
+
+        </LinearLayout>
 
     </ScrollView>
 

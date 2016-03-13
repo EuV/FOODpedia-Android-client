@@ -15,4 +15,22 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="TextMain">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">@color/black_87</item>
+        <item name="android:textSize">@dimen/text_main</item>
+    </style>
+
+    <style name="TextTitle" parent="TextMain">
+        <item name="android:textSize">@dimen/text_title</item>
+    </style>
+
+    <style name="HorizontalDivider">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/divider_width</item>
+        <item name="android:background">@color/black_12</item>
+    </style>
+
 </resources>
