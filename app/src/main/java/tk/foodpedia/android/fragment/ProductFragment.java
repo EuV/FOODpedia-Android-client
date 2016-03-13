@@ -40,7 +40,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_product_information, container, false);
+        View v = inflater.inflate(R.layout.fragment_product, container, false);
         refresher = (SwipeRefreshLayout) v.findViewById(R.id.product_refresher);
         refresher.setOnRefreshListener(this);
         return v;
