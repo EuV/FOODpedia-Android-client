@@ -43,6 +43,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
         View v = inflater.inflate(R.layout.fragment_product, container, false);
         refresher = (SwipeRefreshLayout) v.findViewById(R.id.product_refresher);
         refresher.setOnRefreshListener(this);
+        refresher.setColorSchemeResources(R.color.primary, R.color.accent_2_700, R.color.accent);
         return v;
     }
 
