@@ -39,4 +39,8 @@
     <color name="accent_light">@color/accent_100</color>
     <color name="accent">@color/accent_200</color>
     <color name="accent_dark">@color/accent_400</color>
+
+    <color name="graph_proteins">@color/primary</color>
+    <color name="graph_fat">@color/accent</color>
+    <color name="graph_carbohydrates">@color/accent_2_700</color>
 </resources>

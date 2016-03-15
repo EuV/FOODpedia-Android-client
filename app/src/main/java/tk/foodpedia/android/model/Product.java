@@ -132,6 +132,22 @@ public class Product extends Downloadable {
         }
     }
 
+    public float getProteinsSlice() {
+        return getProteins() == null ? 0 : getProteins().floatValue();
+    }
+
+    public float getFatSlice() {
+        return getFat() == null ? 0 : getFat().floatValue();
+    }
+
+    public float getCarbohydratesSlice() {
+        return getCarbohydrates() == null ? 0 : getCarbohydrates().floatValue();
+    }
+
+    public float getNeutralSlice() {
+        return Math.max(0, (100 - getProteinsSlice() - getFatSlice() - getCarbohydratesSlice()));
+    }
+
     @Override
     public String toString() {
         return "Product{" +

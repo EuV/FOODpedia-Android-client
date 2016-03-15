@@ -1,5 +1,6 @@
 package tk.foodpedia.android.fragment;
 
+import android.content.res.Resources;
 import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -7,6 +8,12 @@ import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+
+import com.echo.holographlibrary.PieGraph;
+import com.echo.holographlibrary.PieSlice;
+
+import java.util.ArrayList;
 
 import tk.foodpedia.android.App;
 import tk.foodpedia.android.R;
@@ -15,6 +22,7 @@ import tk.foodpedia.android.model.Downloadable;
 import tk.foodpedia.android.model.Product;
 
 public class ProductFragment extends LoaderFragment implements OnRefreshListener {
+    private static final int GRAPH_ANIMATION_DURATION = 500;
     private static final String KEY_PRODUCT = "key_product";
     private static final String KEY_PRODUCT_ID = "key_product_id";
 
@@ -60,9 +68,10 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
         }
 
         View v = inflater.inflate(R.layout.fragment_product, container, false);
+        initPieGraph((PieGraph) v.findViewById(R.id.pie_graph));
         refresher = (SwipeRefreshLayout) v.findViewById(R.id.product_refresher);
         refresher.setOnRefreshListener(this);
-        refresher.setColorSchemeResources(R.color.primary, R.color.accent_2_700, R.color.accent);
+        refresher.setColorSchemeResources(R.color.graph_proteins, R.color.graph_carbohydrates, R.color.graph_fat);
         return v;
     }
 
@@ -85,11 +94,45 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
     }
 
 
+    @SuppressWarnings("deprecation")
+    private void initPieGraph(PieGraph pieGraph) {
+        Resources r = getResources();
+        ArrayList<PieSlice> slices = new ArrayList<>();
+
+        PieSlice proteins = new PieSlice();
+        proteins.setColor(r.getColor(R.color.graph_proteins));
+        slices.add(Slices.PROTEINS, proteins);
+
+        PieSlice fat = new PieSlice();
+        fat.setColor(r.getColor(R.color.graph_fat));
+        slices.add(Slices.FAT, fat);
+
+        PieSlice carbohydrates = new PieSlice();
+        carbohydrates.setColor(r.getColor(R.color.graph_carbohydrates));
+        slices.add(Slices.CARBOHYDRATES, carbohydrates);
+
+        PieSlice neutral = new PieSlice();
+        neutral.setColor(r.getColor(R.color.black_12));
+        neutral.setValue(100);
+        slices.add(Slices.NEUTRAL, neutral);
+
+        pieGraph.setSlices(slices);
+    }
+
+
     @SuppressWarnings("all")
     private void updateViews() {
-        if (product != null) {
-            product.fill((ViewGroup) getView().findViewById(R.id.product_views_container));
-        }
+        if (product == null) return;
+        product.fill((ViewGroup) getView().findViewById(R.id.product_views_container));
+
+        PieGraph pg = (PieGraph) getView().findViewById(R.id.pie_graph);
+        pg.getSlice(Slices.PROTEINS).setGoalValue(product.getProteinsSlice());
+        pg.getSlice(Slices.FAT).setGoalValue(product.getFatSlice());
+        pg.getSlice(Slices.CARBOHYDRATES).setGoalValue(product.getCarbohydratesSlice());
+        pg.getSlice(Slices.NEUTRAL).setGoalValue(product.getNeutralSlice());
+        pg.setInterpolator(new AccelerateDecelerateInterpolator());
+        pg.setDuration(GRAPH_ANIMATION_DURATION);
+        pg.animateToGoalValues();
     }
 
 
@@ -136,5 +179,13 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
                 refresher.setRefreshing(refreshing);
             }
         });
+    }
+
+
+    private static final class Slices {
+        static final int PROTEINS = 0;
+        static final int FAT = 1;
+        static final int CARBOHYDRATES = 2;
+        static final int NEUTRAL = 3;
     }
 }
