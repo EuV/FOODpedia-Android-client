@@ -15,6 +15,10 @@ public final class StringHelper {
         return scanner.hasNext() ? scanner.next() : "";
     }
 
+    public static String getString(@StringRes int strId) {
+        return format(strId);
+    }
+
     public static String format(@StringRes int strId, Object... formatArgs) {
         return App.getContext().getString(strId, formatArgs);
     }

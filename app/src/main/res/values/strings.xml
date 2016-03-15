@@ -9,6 +9,7 @@
     <string name="label_settings">Настройки</string>
     <string name="label_help">Справка</string>
     <string name="label_per_100_g">В 100 г. продукта:</string>
+    <string name="label_no_description">Описание товара отсутствует</string>
 
     <string name="format_mass">Масса: %s</string>
     <string name="format_proteins">белки - %s г</string>
@@ -17,6 +18,7 @@
     <string name="format_energy">энерг. - %s ккал</string>
     <string name="format_additives">Добавки: %s</string>
     <string name="format_ingredients">Состав: %s</string>
+    <string name="format_ean">Код товара: %s</string>
 
     <string name="error_failed_to_open_camera">Не удаётся запустить камеру</string>
     <string name="error_failed_to_start_preview">Не удаётся начать предпросмотр изображения с камеры</string>

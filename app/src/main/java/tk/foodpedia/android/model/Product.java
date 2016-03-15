@@ -9,6 +9,7 @@ import tk.foodpedia.android.model.meta.DoubleValue;
 import tk.foodpedia.android.model.meta.StringValue;
 
 import static tk.foodpedia.android.util.StringHelper.format;
+import static tk.foodpedia.android.util.StringHelper.getString;
 
 public class Product extends Downloadable {
     private StringValue ean;
@@ -26,6 +27,10 @@ public class Product extends Downloadable {
         return ean == null ? null : ean.getValue();
     }
 
+    public String getEanFormatted() {
+        return format(R.string.format_ean, getEan() == null ? "?" : getEan());
+    }
+
     public void setEan(StringValue ean) {
         this.ean = ean;
     }
@@ -40,6 +45,10 @@ public class Product extends Downloadable {
 
     public String getDescription() {
         return description == null ? null : description.getValue();
+    }
+
+    public String getDescriptionFormatted() {
+        return getDescription() == null ? getString(R.string.label_no_description) : getDescription();
     }
 
     public void setDescription(StringValue description) {

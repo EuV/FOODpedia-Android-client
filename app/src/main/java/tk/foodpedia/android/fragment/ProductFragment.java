@@ -67,12 +67,23 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
             return null;
         }
 
-        View v = inflater.inflate(R.layout.fragment_product, container, false);
-        initPieGraph((PieGraph) v.findViewById(R.id.pie_graph));
-        refresher = (SwipeRefreshLayout) v.findViewById(R.id.product_refresher);
+        View view = inflater.inflate(R.layout.fragment_product, container, false);
+
+        initPieGraph((PieGraph) view.findViewById(R.id.pie_graph));
+
+        view.findViewById(R.id.product_name).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (product == null) return;
+                PopUpFragment.newInstance(product).show(getFragmentManager(), null);
+            }
+        });
+
+        refresher = (SwipeRefreshLayout) view.findViewById(R.id.product_refresher);
         refresher.setOnRefreshListener(this);
         refresher.setColorSchemeResources(R.color.graph_proteins, R.color.graph_carbohydrates, R.color.graph_fat);
-        return v;
+
+        return view;
     }
 
 
