@@ -112,7 +112,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
         slices.add(Slices.CARBOHYDRATES, carbohydrates);
 
         PieSlice neutral = new PieSlice();
-        neutral.setColor(r.getColor(R.color.black_12));
+        neutral.setColor(r.getColor(R.color.graph_neutral));
         neutral.setValue(100);
         slices.add(Slices.NEUTRAL, neutral);
 

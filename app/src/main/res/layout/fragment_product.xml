@@ -20,6 +20,9 @@
 
             <TextView
                 style="@style/TextTitle"
+                android:layout_gravity="center"
+                android:drawablePadding="5dp"
+                android:drawableRight="@drawable/ic_info_black_36dp"
                 android:gravity="center"
                 android:tag="getName"/>
 
