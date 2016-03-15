@@ -1,5 +1,9 @@
 package tk.foodpedia.android.model;
 
+import android.text.TextUtils;
+
+import java.util.ArrayList;
+
 import tk.foodpedia.android.R;
 import tk.foodpedia.android.model.meta.DoubleValue;
 import tk.foodpedia.android.model.meta.StringValue;
@@ -16,6 +20,7 @@ public class Product extends Downloadable {
     private DoubleValue fat;
     private DoubleValue carbohydrates;
     private StringValue ingredients;
+    private final ArrayList<String> additives = new ArrayList<>();
 
     public String getEan() {
         return ean == null ? null : ean.getValue();
@@ -113,6 +118,20 @@ public class Product extends Downloadable {
         this.ingredients = ingredients;
     }
 
+    public ArrayList<String> getAdditives() {
+        return additives;
+    }
+
+    public String getAdditivesFormatted() {
+        return additives.isEmpty() ? "" : format(R.string.format_additives, TextUtils.join(", ", additives));
+    }
+
+    public void addAdditive(String additive) {
+        if (additive != null) {
+            additives.add(additive);
+        }
+    }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -125,6 +144,7 @@ public class Product extends Downloadable {
                 ", fat=" + fat +
                 ", carbohydrates=" + carbohydrates +
                 ", ingredients=" + ingredients +
+                ", additives=" + additives +
                 '}';
     }
 }

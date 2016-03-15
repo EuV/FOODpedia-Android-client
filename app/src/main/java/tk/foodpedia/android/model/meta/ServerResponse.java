@@ -18,6 +18,13 @@ public class ServerResponse {
                 : results.bindings.get(0).toJSONString();
     }
 
+    public List<JSONObject> getExtras() {
+        if (results == null || results.bindings.isEmpty()) return null;
+        List<JSONObject> extras = new ArrayList<>(results.bindings);
+        extras.remove(0);
+        return extras;
+    }
+
     class Results {
         private List<JSONObject> bindings = new ArrayList<>();
 

@@ -15,6 +15,7 @@
     <string name="format_fat">жиры - %s г</string>
     <string name="format_carbohydrates">углеводы - %s г</string>
     <string name="format_energy">энерг. - %s ккал</string>
+    <string name="format_additives">Добавки: %s</string>
     <string name="format_ingredients">Состав: %s</string>
 
     <string name="error_failed_to_open_camera">Не удаётся запустить камеру</string>

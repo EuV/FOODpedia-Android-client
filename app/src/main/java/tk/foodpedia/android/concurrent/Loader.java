@@ -5,6 +5,7 @@ import android.os.HandlerThread;
 import android.support.annotation.RawRes;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +18,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import tk.foodpedia.android.App;
 import tk.foodpedia.android.R;
 import tk.foodpedia.android.model.Downloadable;
+import tk.foodpedia.android.model.Product;
+import tk.foodpedia.android.model.meta.Additive;
 import tk.foodpedia.android.model.meta.ServerResponse;
 import tk.foodpedia.android.util.ConnectivityHelper;
 import tk.foodpedia.android.util.StringHelper;
@@ -92,6 +95,15 @@ public class Loader extends HandlerThread {
 
         ServerResponse sr = JSON.parseObject(data, ServerResponse.class);
         Downloadable downloadable = JSON.parseObject(sr.getPayload(), clazz);
+
+        // Workaround: Current version of SPARQL endpoint doesn't support GROUP_CONCAT,
+        // so additives come as extra rows of query result
+        if(downloadable instanceof  Product) {
+            Product product = (Product) downloadable;
+            for(JSONObject additive: sr.getExtras()) {
+                product.addAdditive(JSON.parseObject(additive.toJSONString(), Additive.class).getValue());
+            }
+        }
 
         if (downloadable == null) {
             destination.loadFailed();

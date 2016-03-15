@@ -54,6 +54,10 @@
 
             <TextView
                 style="@style/TextMain"
+                android:tag="getAdditivesFormatted"/>
+
+            <TextView
+                style="@style/TextMain"
                 android:tag="getIngredientsFormatted"/>
 
         </LinearLayout>
