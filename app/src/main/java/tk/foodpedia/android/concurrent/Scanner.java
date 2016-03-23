@@ -129,6 +129,10 @@ public class Scanner extends HandlerThread {
 
 
     private class CameraPreviewCallback implements Camera.PreviewCallback {
+        private static final char INTERNAL_USE_BARCODE_PREFIX = '2';
+        private static final int EAN_8_LENGTH = 8;
+        private static final int EAN_13_LENGTH = 13;
+
         private ImageScanner imageScanner;
         private Image previewFrame;
 
@@ -138,6 +142,7 @@ public class Scanner extends HandlerThread {
             imageScanner.setConfig(0, Config.X_DENSITY, 3);
             imageScanner.setConfig(0, Config.Y_DENSITY, 3);
         }
+
 
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
@@ -150,7 +155,7 @@ public class Scanner extends HandlerThread {
 
             for (Symbol symbol : imageScanner.getResults()) {
                 final String barcode = symbol.getData();
-                if (barcode != null) {
+                if (validateBarcode(barcode)) {
                     camera.stopPreview();
                     deliverResult(barcode);
                 }
@@ -158,6 +163,22 @@ public class Scanner extends HandlerThread {
 
             camera.addCallbackBuffer(data);
         }
+
+
+        private boolean validateBarcode(String barcode) {
+            if (barcode == null) return false;
+
+            int length = barcode.length();
+            if (!(length == EAN_8_LENGTH || length == EAN_13_LENGTH)) return false;
+
+            if (barcode.charAt(0) == INTERNAL_USE_BARCODE_PREFIX) {
+                ToastHelper.showOnce(R.string.error_barcode_for_internal_use);
+                return false;
+            }
+
+            return true;
+        }
+
 
         private void deliverResult(final String barcode) {
             App.runOnUiThread(new Runnable() {

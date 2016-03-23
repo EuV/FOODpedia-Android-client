@@ -6,10 +6,21 @@ import android.widget.Toast;
 import tk.foodpedia.android.App;
 
 public final class ToastHelper {
+    private static final int MESSAGE_LENGTH_THRESHOLD = 65;
+    private static final int PAUSE_BETWEEN_MESSAGES_MS = 4000;
+    private static long lastMessageDisplayTime;
+
     private ToastHelper() { /* */ }
 
-    public static void show(@StringRes int resId) {
-        show(App.getContext().getString(resId));
+    /**
+     * Displays message no more than once per predefined period of time.
+     */
+    public static void showOnce(@StringRes int resId, Object... args) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime > lastMessageDisplayTime + PAUSE_BETWEEN_MESSAGES_MS) {
+            lastMessageDisplayTime = currentTime;
+            show(resId, args);
+        }
     }
 
     public static void show(@StringRes int resId, Object... args) {
@@ -20,7 +31,8 @@ public final class ToastHelper {
         App.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(App.getContext(), msg, Toast.LENGTH_SHORT).show();
+                int duration = (msg.length() > MESSAGE_LENGTH_THRESHOLD) ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT;
+                Toast.makeText(App.getContext(), msg, duration).show();
             }
         });
     }
