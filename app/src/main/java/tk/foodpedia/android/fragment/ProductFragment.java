@@ -14,10 +14,13 @@ import com.echo.holographlibrary.PieGraph;
 import com.echo.holographlibrary.PieSlice;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import tk.foodpedia.android.App;
 import tk.foodpedia.android.R;
+import tk.foodpedia.android.concurrent.Database;
 import tk.foodpedia.android.concurrent.Loader;
+import tk.foodpedia.android.db.ProductRecord;
 import tk.foodpedia.android.model.Downloadable;
 import tk.foodpedia.android.model.Product;
 
@@ -94,6 +97,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
             loadProduct(false);
         } else {
             updateViews();
+            saveHistory();
         }
     }
 
@@ -147,6 +151,13 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
     }
 
 
+    private void saveHistory() {
+        if (product == null) return;
+        ProductRecord productRecord = new ProductRecord(product.getEan(), product.getName(), new Date());
+        Database.getInstance().saveHistory(productRecord);
+    }
+
+
     private void loadProduct(boolean forced) {
         if (productId == null) {
             animateLoading(false);
@@ -163,6 +174,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
         if (downloadable == product) return;
         product = (Product) downloadable;
         updateViews();
+        saveHistory();
     }
 
 

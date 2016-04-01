@@ -11,10 +11,10 @@ import android.widget.EditText;
 import tk.foodpedia.android.view.CameraPreview;
 import tk.foodpedia.android.R;
 import tk.foodpedia.android.concurrent.Scanner;
-import tk.foodpedia.android.concurrent.Scanner.OnScanCompletedListener;
+import tk.foodpedia.android.concurrent.Scanner.ScannerCallbacks;
 
 public class ScannerFragment extends BaseFragment {
-    private OnScanCompletedListener onScanCompletedListener;
+    private ScannerCallbacks scannerCallbacks;
     private Scanner scanner;
 
     public static ScannerFragment newInstance() {
@@ -25,7 +25,7 @@ public class ScannerFragment extends BaseFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        onScanCompletedListener = (OnScanCompletedListener) context;
+        scannerCallbacks = (ScannerCallbacks) context;
     }
 
 
@@ -40,12 +40,12 @@ public class ScannerFragment extends BaseFragment {
             public void onClick(View button) {
                 button.setOnClickListener(null);
                 String barcode = ((EditText) v.findViewById(R.id.edit_text_barcode)).getText().toString();
-                onScanCompletedListener.onScanCompleted(barcode);
+                scannerCallbacks.onScanCompleted(barcode);
             }
         });
 
         CameraPreview cameraPreview = ((CameraPreview) v.findViewById(R.id.camera_preview));
-        scanner = Scanner.getInstance(onScanCompletedListener, cameraPreview);
+        scanner = Scanner.getInstance(scannerCallbacks, cameraPreview);
 
         return v;
     }

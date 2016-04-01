@@ -20,15 +20,15 @@ import tk.foodpedia.android.view.CameraPreview;
 import static android.hardware.Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE;
 
 @SuppressWarnings("deprecation")
-public class Scanner extends HandlerThread {
+public final class Scanner extends HandlerThread {
     private static Scanner scannerInstance;
 
     private Handler scannerThreadHandler;
-    private OnScanCompletedListener onScanCompletedListener;
+    private ScannerCallbacks callbacks;
     private CameraPreview cameraPreview;
     private Camera camera;
 
-    public interface OnScanCompletedListener {
+    public interface ScannerCallbacks {
         void onScanCompleted(String barcode);
     }
 
@@ -40,13 +40,13 @@ public class Scanner extends HandlerThread {
     }
 
 
-    public static Scanner getInstance(OnScanCompletedListener onScanCompletedListener, CameraPreview cameraPreview) {
+    public static Scanner getInstance(ScannerCallbacks scannerCallbacks, CameraPreview cameraPreview) {
         if (scannerInstance == null) {
             scannerInstance = new Scanner();
             System.loadLibrary("iconv");
         }
 
-        scannerInstance.onScanCompletedListener = onScanCompletedListener;
+        scannerInstance.callbacks = scannerCallbacks;
         scannerInstance.cameraPreview = cameraPreview;
 
         return scannerInstance;
@@ -184,7 +184,7 @@ public class Scanner extends HandlerThread {
             App.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    onScanCompletedListener.onScanCompleted(barcode);
+                    callbacks.onScanCompleted(barcode);
                 }
             });
         }

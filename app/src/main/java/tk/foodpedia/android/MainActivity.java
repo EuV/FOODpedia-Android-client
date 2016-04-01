@@ -23,10 +23,10 @@ import tk.foodpedia.android.fragment.HelpFragment;
 import tk.foodpedia.android.fragment.HistoryFragment;
 import tk.foodpedia.android.fragment.ProductFragment;
 import tk.foodpedia.android.fragment.ScannerFragment;
-import tk.foodpedia.android.concurrent.Scanner.OnScanCompletedListener;
+import tk.foodpedia.android.concurrent.Scanner.ScannerCallbacks;
 import tk.foodpedia.android.fragment.SettingsFragment;
 
-public class MainActivity extends AppCompatActivity implements OnScanCompletedListener, OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements ScannerCallbacks, OnNavigationItemSelectedListener {
     private static final String KEY_FAB_IS_HIDDEN = "key_fab_is_hidden";
     private static final Map<Class, Integer> FRAGMENT_MENU_ID = new HashMap<>();
 

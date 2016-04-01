@@ -25,7 +25,7 @@ import tk.foodpedia.android.util.ConnectivityHelper;
 import tk.foodpedia.android.util.StringHelper;
 import tk.foodpedia.android.util.ToastHelper;
 
-public class Loader extends HandlerThread {
+public final class Loader extends HandlerThread {
     private static final String ENDPOINT = "http://foodpedia.tk/sparql?query=";
     private static final int CONNECT_TIMEOUT = 5000;
     private static final int READ_TIMEOUT = 5000;
@@ -98,9 +98,9 @@ public class Loader extends HandlerThread {
 
         // Workaround: Current version of SPARQL endpoint doesn't support GROUP_CONCAT,
         // so additives come as extra rows of query result
-        if(downloadable instanceof  Product) {
+        if (downloadable instanceof Product) {
             Product product = (Product) downloadable;
-            for(JSONObject additive: sr.getExtras()) {
+            for (JSONObject additive : sr.getExtras()) {
                 product.addAdditive(JSON.parseObject(additive.toJSONString(), Additive.class).getValue());
             }
         }
