@@ -28,7 +28,7 @@
     </style>
 
     <style name="HorizontalDivider">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_width</item>
         <item name="android:background">@color/black_12</item>
     </style>

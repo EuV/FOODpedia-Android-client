@@ -34,8 +34,9 @@ public class HistoryFragment extends BaseFragment implements DatabaseCallbacks<A
     public void onReadDatabaseCompleted(ArrayList<ProductRecord> productRecords) {
         if (!isAdded()) return;
         for (ProductRecord productRecord : productRecords) {
-            TextView record = new TextView(getContext());
-            record.setText(productRecord.name + " " + productRecord.lastViewed);
+            View record = getActivity().getLayoutInflater().inflate(R.layout.view_product_record, null);
+            ((TextView) record.findViewById(R.id.product_record_name)).setText(productRecord.name);
+            ((TextView) record.findViewById(R.id.product_record_last_viewed)).setText(productRecord.lastViewed.toString());
             ((LinearLayout) getView()).addView(record);
         }
     }
