@@ -16,4 +16,10 @@ public abstract class BaseFragment extends Fragment {
         MainActivity activity = (MainActivity) getActivity();
         activity.getSupportActionBar().setTitle(titleResId);
     }
+
+
+    protected void placeFragment(Fragment fragment, boolean clearBackStack) {
+        MainActivity activity = (MainActivity) getActivity();
+        activity.placeFragment(fragment, clearBackStack);
+    }
 }

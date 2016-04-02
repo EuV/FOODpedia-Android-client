@@ -5,6 +5,7 @@ import android.os.HandlerThread;
 import android.support.annotation.RawRes;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.IOException;
@@ -93,23 +94,27 @@ public final class Loader extends HandlerThread {
             return;
         }
 
-        ServerResponse sr = JSON.parseObject(data, ServerResponse.class);
-        Downloadable downloadable = JSON.parseObject(sr.getPayload(), clazz);
+        try {
+            ServerResponse sr = JSON.parseObject(data, ServerResponse.class);
+            Downloadable downloadable = JSON.parseObject(sr.getPayload(), clazz);
 
-        // Workaround: Current version of SPARQL endpoint doesn't support GROUP_CONCAT,
-        // so additives come as extra rows of query result
-        if (downloadable instanceof Product) {
-            Product product = (Product) downloadable;
-            for (JSONObject additive : sr.getExtras()) {
-                product.addAdditive(JSON.parseObject(additive.toJSONString(), Additive.class).getValue());
+            // Workaround: Current version of SPARQL endpoint doesn't support GROUP_CONCAT,
+            // so additives come as extra rows of query result
+            if (downloadable instanceof Product) {
+                Product product = (Product) downloadable;
+                for (JSONObject additive : sr.getExtras()) {
+                    product.addAdditive(JSON.parseObject(additive.toJSONString(), Additive.class).getValue());
+                }
             }
-        }
 
-        if (downloadable == null) {
+            if (downloadable == null) {
+                destination.loadFailed();
+            } else {
+                dataCache.put(downloadableId, downloadable); // TODO: implement persistent cache
+                destination.loadFinished(downloadable);
+            }
+        } catch (JSONException e) {
             destination.loadFailed();
-        } else {
-            dataCache.put(downloadableId, downloadable); // TODO: implement persistent cache
-            destination.loadFinished(downloadable);
         }
     }
 

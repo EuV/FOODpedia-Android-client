@@ -60,7 +60,7 @@ public class HistoryFragment extends BaseFragment implements DatabaseCallbacks<A
     }
 
 
-    private class HistoryAdapter extends Adapter<ProductRecordViewHolder> {
+    private class HistoryAdapter extends Adapter<ProductRecordViewHolder> implements View.OnClickListener {
         private ArrayList<ProductRecord> productRecords = new ArrayList<>();
 
         public void setProductRecords(ArrayList<ProductRecord> productRecords) {
@@ -72,6 +72,7 @@ public class HistoryFragment extends BaseFragment implements DatabaseCallbacks<A
         @Override
         public ProductRecordViewHolder onCreateViewHolder(ViewGroup parent, int i) {
             View record = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_product_record, parent, false);
+            record.setOnClickListener(this);
             return new ProductRecordViewHolder(record);
         }
 
@@ -87,6 +88,13 @@ public class HistoryFragment extends BaseFragment implements DatabaseCallbacks<A
         @Override
         public int getItemCount() {
             return productRecords.size();
+        }
+
+
+        @Override
+        public void onClick(View productRecordView) {
+            int index = historyRecyclerView.getChildAdapterPosition(productRecordView);
+            placeFragment(ProductFragment.newInstance(productRecords.get(index).ean), false);
         }
     }
 

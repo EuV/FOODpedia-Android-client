@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -60,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
         drawerMenu.setNavigationItemSelectedListener(this);
 
         if (savedInstanceState == null) {
-            placeFragment(ProductFragment.newInstance(null));
-            placeFragment(ScannerFragment.newInstance());
+            placeFragment(ProductFragment.newInstance(null), true);
+            placeFragment(ScannerFragment.newInstance(), false);
         } else {
             fabIsHidden = savedInstanceState.getBoolean(KEY_FAB_IS_HIDDEN);
         }
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
             @Override
             public void onClick(final View view) {
                 if (fabIsHidden) return;
-                placeFragment(ScannerFragment.newInstance());
+                placeFragment(ScannerFragment.newInstance(), false);
             }
         });
     }
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
     @Override
     public void onScanCompleted(String barcode) {
         if (activityDestroyed) return;
-        placeFragment(ProductFragment.newInstance(barcode));
+        placeFragment(ProductFragment.newInstance(barcode), true);
     }
 
 
@@ -119,19 +120,19 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_product:
-                placeFragment(ProductFragment.newInstance(null));
+                placeFragment(ProductFragment.newInstance(null), true);
                 break;
             case R.id.nav_scanner:
-                placeFragment(ScannerFragment.newInstance());
+                placeFragment(ScannerFragment.newInstance(), false);
                 break;
             case R.id.nav_history:
-                placeFragment(HistoryFragment.newInstance());
+                placeFragment(HistoryFragment.newInstance(), true);
                 break;
             case R.id.nav_settings:
-                placeFragment(SettingsFragment.newInstance());
+                placeFragment(SettingsFragment.newInstance(), true);
                 break;
             case R.id.nav_help:
-                placeFragment(HelpFragment.newInstance());
+                placeFragment(HelpFragment.newInstance(), true);
                 break;
         }
 
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
     }
 
 
-    protected void placeFragment(Fragment newFragment) {
+    public void placeFragment(Fragment newFragment, boolean clearBackStack) {
         if (newFragment == null) return;
 
         Fragment topFragment = getTopFragment();
@@ -152,30 +153,37 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment);
 
-        if (newFragment instanceof ScannerFragment) {
-            transaction.addToBackStack(null);
-            hideFab();
+        if (clearBackStack) {
+            getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         } else {
-            removeTopFragment();
+            transaction.addToBackStack(null);
         }
 
         transaction.commit();
 
-        drawerMenu.setCheckedItem(FRAGMENT_MENU_ID.get(newFragment.getClass()));
+        syncLayoutWithFragment(newFragment);
     }
 
 
     protected boolean removeTopFragment() {
         boolean fragmentPopped = getSupportFragmentManager().popBackStackImmediate();
 
-        if (fragmentPopped) {
-            Class topFragmentClass = getTopFragment().getClass();
-            drawerMenu.setCheckedItem(FRAGMENT_MENU_ID.get(topFragmentClass));
-            if (topFragmentClass != ScannerFragment.class) showFab();
-            return true;
+        syncLayoutWithFragment(getTopFragment());
+
+        return fragmentPopped;
+    }
+
+
+    protected void syncLayoutWithFragment(Fragment fragment) {
+        if (fragment == null) return;
+
+        if (fragment instanceof ScannerFragment) {
+            hideFab();
+        } else {
+            showFab();
         }
 
-        return false;
+        drawerMenu.setCheckedItem(FRAGMENT_MENU_ID.get(fragment.getClass()));
     }
 
 
