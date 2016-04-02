@@ -16,6 +16,8 @@
         <TextView
             android:id="@+id/product_record_name"
             style="@style/TextMain"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:textSize="13sp"/>
 
         <TextView
