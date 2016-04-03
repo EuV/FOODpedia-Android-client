@@ -1,126 +1,145 @@
-<android.support.v4.widget.SwipeRefreshLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/product_refresher"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <ProgressBar
+        android:id="@+id/product_progress_bar"
+        style="@style/ProgressBar"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/product_no_information"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/label_scan_hint"
+        android:visibility="gone"/>
 
-        <LinearLayout
-            android:id="@+id/product_views_container"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/product_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin">
-
-            <TextView
-                android:id="@+id/product_name"
-                style="@style/TextTitle"
-                android:layout_gravity="center"
-                android:drawablePadding="5dp"
-                android:drawableRight="@drawable/ic_info_black_36dp"
-                android:gravity="center"
-                android:tag="getName"/>
-
-            <View
-                style="@style/HorizontalDivider"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"/>
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin">
 
-                <com.echo.holographlibrary.PieGraph
-                    android:id="@+id/pie_graph"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:layout_weight="3"
-                    android:padding="10dp"/>
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <TextView
+                    android:id="@+id/product_name"
+                    style="@style/TextTitle"
                     android:layout_gravity="center"
-                    android:layout_weight="1">
+                    android:drawablePadding="5dp"
+                    android:drawableRight="@drawable/ic_info_black_36dp"
+                    android:gravity="center"
+                    android:tag="getName"/>
 
-                    <TextView
-                        android:id="@+id/pie_graph_legend_title"
-                        style="@style/TextMain"
-                        android:text="@string/label_per_100_g"/>
+                <View
+                    style="@style/HorizontalDivider"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"/>
 
-                    <TextView
-                        android:id="@+id/pie_graph_legend_proteins"
-                        style="@style/TextMain"
-                        android:layout_below="@id/pie_graph_legend_title"
-                        android:layout_marginLeft="20dp"
-                        android:tag="getProteinsFormatted"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/pie_graph_legend_fat"
-                        style="@style/TextMain"
-                        android:layout_below="@id/pie_graph_legend_proteins"
-                        android:layout_marginLeft="20dp"
-                        android:tag="getFatFormatted"/>
+                    <com.echo.holographlibrary.PieGraph
+                        android:id="@+id/pie_graph"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_weight="3"
+                        android:padding="10dp"/>
 
-                    <TextView
-                        android:id="@+id/pie_graph_legend_carbohydrates"
-                        style="@style/TextMain"
-                        android:layout_below="@id/pie_graph_legend_fat"
-                        android:layout_marginLeft="20dp"
-                        android:tag="getCarbohydratesFormatted"/>
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1">
 
-                    <TextView
-                        style="@style/TextMain"
-                        android:layout_below="@id/pie_graph_legend_carbohydrates"
-                        android:tag="getEnergyFormatted"/>
+                        <TextView
+                            android:id="@+id/pie_graph_legend_title"
+                            style="@style/TextMain"
+                            android:text="@string/label_per_100_g"/>
 
-                    <View
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
-                        android:layout_alignBottom="@id/pie_graph_legend_proteins"
-                        android:layout_marginBottom="4dp"
-                        android:background="@color/graph_proteins"/>
+                        <TextView
+                            android:id="@+id/pie_graph_legend_proteins"
+                            style="@style/TextMain"
+                            android:layout_below="@id/pie_graph_legend_title"
+                            android:layout_marginLeft="20dp"
+                            android:tag="getProteinsFormatted"/>
 
-                    <View
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
-                        android:layout_alignBottom="@id/pie_graph_legend_fat"
-                        android:layout_marginBottom="4dp"
-                        android:background="@color/graph_fat"/>
+                        <TextView
+                            android:id="@+id/pie_graph_legend_fat"
+                            style="@style/TextMain"
+                            android:layout_below="@id/pie_graph_legend_proteins"
+                            android:layout_marginLeft="20dp"
+                            android:tag="getFatFormatted"/>
 
-                    <View
-                        android:layout_width="10dp"
-                        android:layout_height="10dp"
-                        android:layout_alignBottom="@id/pie_graph_legend_carbohydrates"
-                        android:layout_marginBottom="4dp"
-                        android:background="@color/graph_carbohydrates"/>
+                        <TextView
+                            android:id="@+id/pie_graph_legend_carbohydrates"
+                            style="@style/TextMain"
+                            android:layout_below="@id/pie_graph_legend_fat"
+                            android:layout_marginLeft="20dp"
+                            android:tag="getCarbohydratesFormatted"/>
 
-                </RelativeLayout>
+                        <TextView
+                            style="@style/TextMain"
+                            android:layout_below="@id/pie_graph_legend_carbohydrates"
+                            android:tag="getEnergyFormatted"/>
+
+                        <View
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:layout_alignBottom="@id/pie_graph_legend_proteins"
+                            android:layout_marginBottom="4dp"
+                            android:background="@color/graph_proteins"/>
+
+                        <View
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:layout_alignBottom="@id/pie_graph_legend_fat"
+                            android:layout_marginBottom="4dp"
+                            android:background="@color/graph_fat"/>
+
+                        <View
+                            android:layout_width="10dp"
+                            android:layout_height="10dp"
+                            android:layout_alignBottom="@id/pie_graph_legend_carbohydrates"
+                            android:layout_marginBottom="4dp"
+                            android:background="@color/graph_carbohydrates"/>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/TextMain"
+                    android:layout_marginTop="10dp"
+                    android:tag="getMassFormatted"/>
+
+                <TextView
+                    style="@style/TextMain"
+                    android:tag="getAdditivesFormatted"/>
+
+                <TextView
+                    style="@style/TextMain"
+                    android:tag="getIngredientsFormatted"/>
 
             </LinearLayout>
 
-            <TextView
-                style="@style/TextMain"
-                android:layout_marginTop="10dp"
-                android:tag="getMassFormatted"/>
+        </ScrollView>
 
-            <TextView
-                style="@style/TextMain"
-                android:tag="getAdditivesFormatted"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
-            <TextView
-                style="@style/TextMain"
-                android:tag="getIngredientsFormatted"/>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-</android.support.v4.widget.SwipeRefreshLayout>
+</FrameLayout>

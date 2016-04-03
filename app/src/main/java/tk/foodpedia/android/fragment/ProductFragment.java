@@ -1,6 +1,7 @@
 package tk.foodpedia.android.fragment;
 
 import android.content.res.Resources;
+import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -26,11 +27,13 @@ import tk.foodpedia.android.model.Product;
 
 public class ProductFragment extends LoaderFragment implements OnRefreshListener {
     private static final int GRAPH_ANIMATION_DURATION = 500;
+    private static final String KEY_FRAGMENT_STATE = "key_fragment_state";
     private static final String KEY_PRODUCT = "key_product";
     private static final String KEY_PRODUCT_ID = "key_product_id";
 
     private SwipeRefreshLayout refresher;
 
+    private FragmentState fragmentState = FragmentState.INITIAL_LOADING;
     private Product product;
     private String productId;
 
@@ -48,6 +51,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
+            fragmentState = (FragmentState) savedInstanceState.get(KEY_FRAGMENT_STATE);
             product = (Product) savedInstanceState.get(KEY_PRODUCT);
             productId = savedInstanceState.getString(KEY_PRODUCT_ID);
             return;
@@ -66,10 +70,6 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setTitle(R.string.label_product);
 
-        if (productId == null) {
-            return null;
-        }
-
         View view = inflater.inflate(R.layout.fragment_product, container, false);
 
         initPieGraph((PieGraph) view.findViewById(R.id.pie_graph));
@@ -82,7 +82,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
             }
         });
 
-        refresher = (SwipeRefreshLayout) view.findViewById(R.id.product_refresher);
+        refresher = (SwipeRefreshLayout) view.findViewById(R.id.product_container);
         refresher.setOnRefreshListener(this);
         refresher.setColorSchemeResources(R.color.graph_proteins, R.color.graph_carbohydrates, R.color.graph_fat);
 
@@ -93,19 +93,31 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (product == null) {
-            loadProduct(false);
-        } else {
-            updateViews();
-            saveHistory();
+
+        if (productId == null) {
+            fragmentState = FragmentState.NO_INFORMATION;
+        }
+
+        updateFragmentState();
+
+        switch (fragmentState) {
+            case INITIAL_LOADING:
+                loadProduct(false);
+                break;
+
+            case DISPLAY_INFORMATION:
+                updateViews();
+                saveHistory();
+                break;
         }
     }
 
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(KEY_FRAGMENT_STATE, fragmentState);
         outState.putSerializable(KEY_PRODUCT, product);
-        outState.putSerializable(KEY_PRODUCT_ID, productId);
+        outState.putString(KEY_PRODUCT_ID, productId);
     }
 
 
@@ -138,7 +150,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
     @SuppressWarnings("all")
     private void updateViews() {
         if (product == null) return;
-        product.fill((ViewGroup) getView().findViewById(R.id.product_views_container));
+        product.fill((ViewGroup) getView().findViewById(R.id.product_container));
 
         PieGraph pg = (PieGraph) getView().findViewById(R.id.pie_graph);
         pg.getSlice(Slices.PROTEINS).setGoalValue(product.getProteinsSlice());
@@ -159,20 +171,25 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
 
 
     private void loadProduct(boolean forced) {
-        if (productId == null) {
-            animateLoading(false);
-        } else {
-            animateLoading(true);
-            Loader.getInstance().load(this, Product.class, productId, R.raw.query_product, forced);
+        if (fragmentState == FragmentState.DISPLAY_INFORMATION) {
+            animateRefresher(true);
         }
+        Loader.getInstance().load(this, Product.class, productId, R.raw.query_product, forced);
     }
 
 
     @Override
     protected void onLoadFinished(Downloadable downloadable) {
-        animateLoading(false);
+        if (fragmentState == FragmentState.DISPLAY_INFORMATION) {
+            animateRefresher(false);
+        } else {
+            fragmentState = FragmentState.DISPLAY_INFORMATION;
+            updateFragmentState();
+        }
+
         if (downloadable == product) return;
         product = (Product) downloadable;
+
         updateViews();
         saveHistory();
     }
@@ -180,7 +197,17 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
 
     @Override
     public void onLoadFailed() {
-        animateLoading(false);
+        switch (fragmentState) {
+
+            case DISPLAY_INFORMATION:
+                animateRefresher(false);
+                break;
+
+            case INITIAL_LOADING:
+                fragmentState = FragmentState.NO_INFORMATION;
+                updateFragmentState();
+                break;
+        }
     }
 
 
@@ -194,7 +221,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
      * This WA is needed since SwipeRefreshLayout tends to miss
      * direct call of setRefreshing() in some cases.
      */
-    private void animateLoading(final boolean refreshing) {
+    private void animateRefresher(final boolean refreshing) {
         if (refresher == null) return;
         refresher.post(new Runnable() {
             @Override
@@ -202,6 +229,26 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
                 refresher.setRefreshing(refreshing);
             }
         });
+    }
+
+
+    private void updateFragmentState() {
+        setVisibility(R.id.product_progress_bar, fragmentState == FragmentState.INITIAL_LOADING);
+        setVisibility(R.id.product_no_information, fragmentState == FragmentState.NO_INFORMATION);
+        setVisibility(R.id.product_container, fragmentState == FragmentState.DISPLAY_INFORMATION);
+    }
+
+
+    private void setVisibility(@IdRes int viewId, boolean visible) {
+        if (getView() == null) return;
+        getView().findViewById(viewId).setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+
+    private enum FragmentState {
+        INITIAL_LOADING,
+        NO_INFORMATION,
+        DISPLAY_INFORMATION
     }
 
 

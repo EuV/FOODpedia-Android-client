@@ -17,14 +17,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import tk.foodpedia.android.App;
-import tk.foodpedia.android.R;
 import tk.foodpedia.android.model.Downloadable;
 import tk.foodpedia.android.model.Product;
 import tk.foodpedia.android.model.meta.Additive;
 import tk.foodpedia.android.model.meta.ServerResponse;
 import tk.foodpedia.android.util.ConnectivityHelper;
 import tk.foodpedia.android.util.StringHelper;
-import tk.foodpedia.android.util.ToastHelper;
 
 public final class Loader extends HandlerThread {
     private static final String ENDPOINT = "http://foodpedia.tk/sparql?query=";
@@ -38,7 +36,7 @@ public final class Loader extends HandlerThread {
 
     public interface LoaderCallbacks {
         void loadFinished(Downloadable downloadable);
-        void loadFailed();
+        void loadFailed(RootCause rootCause);
     }
 
     private Loader() {
@@ -80,8 +78,7 @@ public final class Loader extends HandlerThread {
 
     private void loadInBackground(LoaderCallbacks destination, Class<? extends Downloadable> clazz, String downloadableId, @RawRes int queryResId) {
         if (!ConnectivityHelper.hasConnection()) {
-            ToastHelper.show(R.string.error_no_network_connection);
-            destination.loadFailed();
+            destination.loadFailed(RootCause.NO_CONNECTION);
             return;
         }
 
@@ -89,8 +86,7 @@ public final class Loader extends HandlerThread {
         try {
             data = download(downloadableId, queryResId);
         } catch (IOException e) {
-            ToastHelper.show(R.string.error_failed_to_load_data);
-            destination.loadFailed();
+            destination.loadFailed(RootCause.IO_ERROR);
             return;
         }
 
@@ -108,13 +104,13 @@ public final class Loader extends HandlerThread {
             }
 
             if (downloadable == null) {
-                destination.loadFailed();
+                destination.loadFailed(RootCause.EMPTY_RESULT);
             } else {
                 dataCache.put(downloadableId, downloadable); // TODO: implement persistent cache
                 destination.loadFinished(downloadable);
             }
         } catch (JSONException e) {
-            destination.loadFailed();
+            destination.loadFailed(RootCause.PARSING_ERROR);
         }
     }
 
@@ -144,5 +140,13 @@ public final class Loader extends HandlerThread {
     private String buildUrl(String downloadableId, @RawRes int queryId) {
         String query = StringHelper.fromStream(App.getContext().getResources().openRawResource(queryId));
         return ENDPOINT + URLEncoder.encode(String.format(query, downloadableId));
+    }
+
+
+    public enum RootCause {
+        NO_CONNECTION,
+        IO_ERROR,
+        EMPTY_RESULT,
+        PARSING_ERROR
     }
 }
