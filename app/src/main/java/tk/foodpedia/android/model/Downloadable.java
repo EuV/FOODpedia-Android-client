@@ -25,7 +25,9 @@ public abstract class Downloadable implements Serializable {
             }
 
             try {
-                ((TextView) view).setText((String) method.invoke(this));
+                String text = (String) method.invoke(this);
+                ((TextView) view).setText(text);
+                view.setVisibility(text == null ? View.GONE : View.VISIBLE);
             } catch (Exception e) { /* */ }
         }
     }

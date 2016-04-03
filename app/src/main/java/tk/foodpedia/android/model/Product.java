@@ -60,7 +60,7 @@ public class Product extends Downloadable {
     }
 
     public String getMassFormatted() {
-        return format(R.string.format_mass, getMass() == null ? "?" : getMass());
+        return getMass() == null ? null : format(R.string.format_mass, getMass());
     }
 
     public void setMass(StringValue mass) {
@@ -72,7 +72,7 @@ public class Product extends Downloadable {
     }
 
     public String getEnergyFormatted() {
-        return format(R.string.format_energy, getEnergy() == null ? "?" : getEnergy());
+        return getEnergy() == null ? null : format(R.string.format_energy, getEnergy());
     }
 
     public void setEnergy(DoubleValue energy) {
@@ -120,7 +120,7 @@ public class Product extends Downloadable {
     }
 
     public String getIngredientsFormatted() {
-        return getIngredients() == null ? "" : format(R.string.format_ingredients, getIngredients());
+        return getIngredients() == null ? null : format(R.string.format_ingredients, getIngredients());
     }
 
     public void setIngredients(StringValue ingredients) {
@@ -132,7 +132,7 @@ public class Product extends Downloadable {
     }
 
     public String getAdditivesFormatted() {
-        return additives.isEmpty() ? "" : format(R.string.format_additives, TextUtils.join(", ", additives));
+        return additives.isEmpty() ? null : format(R.string.format_additives, TextUtils.join(", ", additives));
     }
 
     public void addAdditive(String additive) {

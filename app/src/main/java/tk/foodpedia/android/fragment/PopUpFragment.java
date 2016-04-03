@@ -33,9 +33,7 @@ public class PopUpFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getContext())
-                .setTitle(product.getEanFormatted())
-                .setMessage(product.getDescriptionFormatted())
-                .setPositiveButton(android.R.string.ok, null)
+                .setMessage(product.getDescriptionFormatted() + '\n' + product.getEanFormatted())
                 .create();
     }
 }

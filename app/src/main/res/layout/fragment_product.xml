@@ -76,6 +76,11 @@
                         android:layout_marginLeft="20dp"
                         android:tag="getCarbohydratesFormatted"/>
 
+                    <TextView
+                        style="@style/TextMain"
+                        android:layout_below="@id/pie_graph_legend_carbohydrates"
+                        android:tag="getEnergyFormatted"/>
+
                     <View
                         android:layout_width="10dp"
                         android:layout_height="10dp"
@@ -105,10 +110,6 @@
                 style="@style/TextMain"
                 android:layout_marginTop="10dp"
                 android:tag="getMassFormatted"/>
-
-            <TextView
-                style="@style/TextMain"
-                android:tag="getEnergyFormatted"/>
 
             <TextView
                 style="@style/TextMain"
