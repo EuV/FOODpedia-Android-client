@@ -22,6 +22,7 @@ import tk.foodpedia.android.R;
 import tk.foodpedia.android.concurrent.Database;
 import tk.foodpedia.android.concurrent.Loader;
 import tk.foodpedia.android.db.ProductRecord;
+import tk.foodpedia.android.fragment.popup.ProductDescriptionFragment;
 import tk.foodpedia.android.model.Downloadable;
 import tk.foodpedia.android.model.Product;
 
@@ -78,7 +79,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
             @Override
             public void onClick(View v) {
                 if (product == null) return;
-                PopUpFragment.newInstance(product).show(getFragmentManager(), null);
+                ProductDescriptionFragment.newInstance(product).show(getFragmentManager(), null);
             }
         });
 
