@@ -13,6 +13,7 @@
     <string name="label_scan_hint">Просканируйте штрихкод или введите код товара вручную</string>
     <string name="label_manual_input">Ручной ввод</string>
     <string name="label_product_code">Код товара</string>
+    <string name="label_product_code_tip">Введите 8 или 13 цифр</string>
     <string name="label_search">Поиск</string>
 
     <string name="format_mass">Масса: %s</string>
@@ -30,5 +31,6 @@
     <string name="error_failed_to_parse_data">Не удаётся отобразить информацию о выбранном товаре</string>
     <string name="error_no_product_information">Нет информации о запрашиваемом товаре</string>
     <string name="error_no_network_connection">Нет подключения к сети</string>
-    <string name="error_barcode_for_internal_use">Коды товаров, начинающиеся на 2, предназначены для внутреннего использования магазинами</string>
+    <string name="error_product_code_for_internal_use">Коды товаров, начинающиеся на 2, предназначены для внутреннего использования магазинами</string>
+    <string name="error_product_code_invalid">Код товара должен содержать 8 или 13 цифр</string>
 </resources>

@@ -1,17 +1,30 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="10dp"
+    android:paddingBottom="0dp"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
     android:paddingTop="20dp">
 
-    <EditText
-        android:id="@+id/product_code_input"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/product_code_input_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/label_product_code"
-        android:inputType="number"/>
+        app:counterEnabled="true"
+        app:errorEnabled="true"
+        app:errorTextAppearance="@style/ErrorText"
+        app:hintEnabled="false">
+
+        <EditText
+            android:id="@+id/product_code_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/label_product_code"
+            android:imeOptions="actionDone"
+            android:inputType="number"/>
+
+    </android.support.design.widget.TextInputLayout>
 
 </FrameLayout>

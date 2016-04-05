@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import tk.foodpedia.android.App;
 import tk.foodpedia.android.R;
+import tk.foodpedia.android.util.EanHelper;
 import tk.foodpedia.android.util.ToastHelper;
 import tk.foodpedia.android.view.CameraPreview;
 
@@ -129,10 +130,6 @@ public final class Scanner extends HandlerThread {
 
 
     private class CameraPreviewCallback implements Camera.PreviewCallback {
-        private static final char INTERNAL_USE_BARCODE_PREFIX = '2';
-        private static final int EAN_8_LENGTH = 8;
-        private static final int EAN_13_LENGTH = 13;
-
         private ImageScanner imageScanner;
         private Image previewFrame;
 
@@ -155,7 +152,7 @@ public final class Scanner extends HandlerThread {
 
             for (Symbol symbol : imageScanner.getResults()) {
                 final String barcode = symbol.getData();
-                if (validateBarcode(barcode)) {
+                if (EanHelper.isValid(barcode)) {
                     camera.stopPreview();
                     deliverResult(barcode);
                 }
@@ -163,22 +160,6 @@ public final class Scanner extends HandlerThread {
 
             camera.addCallbackBuffer(data);
         }
-
-
-        private boolean validateBarcode(String barcode) {
-            if (barcode == null) return false;
-
-            int length = barcode.length();
-            if (!(length == EAN_8_LENGTH || length == EAN_13_LENGTH)) return false;
-
-            if (barcode.charAt(0) == INTERNAL_USE_BARCODE_PREFIX) {
-                ToastHelper.showOnce(R.string.error_barcode_for_internal_use);
-                return false;
-            }
-
-            return true;
-        }
-
 
         private void deliverResult(final String barcode) {
             App.runOnUiThread(new Runnable() {

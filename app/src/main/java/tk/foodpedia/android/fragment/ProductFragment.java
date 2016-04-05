@@ -25,6 +25,8 @@ import tk.foodpedia.android.db.ProductRecord;
 import tk.foodpedia.android.fragment.popup.ProductDescriptionFragment;
 import tk.foodpedia.android.model.Downloadable;
 import tk.foodpedia.android.model.Product;
+import tk.foodpedia.android.util.EanHelper;
+import tk.foodpedia.android.util.ToastHelper;
 
 public class ProductFragment extends LoaderFragment implements OnRefreshListener {
     private static final int GRAPH_ANIMATION_DURATION = 500;
@@ -40,10 +42,27 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
 
     public static ProductFragment newInstance(@Nullable String barcode) {
         Bundle args = new Bundle();
-        args.putString(KEY_PRODUCT_ID, barcode);
+        args.putString(KEY_PRODUCT_ID, checkBarcode(barcode) ? barcode : null);
         ProductFragment fragment = new ProductFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+
+    private static boolean checkBarcode(@Nullable String barcode) {
+        if (barcode == null) return false;
+
+        if (!EanHelper.isValid(barcode)) {
+            ToastHelper.show(R.string.error_product_code_invalid);
+            return false;
+        }
+
+        if (EanHelper.isReserved(barcode)) {
+            ToastHelper.show(R.string.error_product_code_for_internal_use);
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -61,8 +80,6 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
         productId = getArguments().getString(KEY_PRODUCT_ID);
         if (productId == null) {
             productId = App.getLastProductId();
-        } else {
-            App.setLastProductId(productId);
         }
     }
 
@@ -193,6 +210,7 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
 
         updateViews();
         saveHistory();
+        App.setLastProductId(productId);
     }
 
 
@@ -209,6 +227,8 @@ public class ProductFragment extends LoaderFragment implements OnRefreshListener
                 updateFragmentState();
                 break;
         }
+
+        App.setLastProductId(null);
     }
 
 
