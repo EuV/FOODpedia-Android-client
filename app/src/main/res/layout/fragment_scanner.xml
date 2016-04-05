@@ -1,27 +1,28 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <tk.foodpedia.android.view.CameraPreview
         android:id="@+id/camera_preview"
         android:layout_width="match_parent"
-        android:layout_height="0dp" />
+        android:layout_height="0dp"/>
 
-    <EditText
-        android:id="@+id/edit_text_barcode"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/camera_preview"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:inputType="number" />
+        android:layout_height="match_parent"
+        android:layout_below="@id/camera_preview">
 
-    <Button
-        android:id="@+id/button_find_product"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/edit_text_barcode"
-        android:layout_centerHorizontal="true"
-        android:text="@string/label_find_product" />
+        <Button
+            android:id="@+id/button_manual_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/label_manual_input"
+            android:textColor="@color/white_100"/>
+
+    </FrameLayout>
 
 </RelativeLayout>

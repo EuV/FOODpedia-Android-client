@@ -11,6 +11,7 @@
     <string name="label_per_100_g">В 100 г. продукта:</string>
     <string name="label_no_description">Описание товара отсутствует</string>
     <string name="label_scan_hint">Просканируйте штрихкод или введите код товара вручную</string>
+    <string name="label_manual_input">Ручной ввод</string>
 
     <string name="format_mass">Масса: %s</string>
     <string name="format_proteins">белки - %s г</string>

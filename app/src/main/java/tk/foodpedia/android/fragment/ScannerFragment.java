@@ -1,12 +1,13 @@
 package tk.foodpedia.android.fragment;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.Button;
 
 import tk.foodpedia.android.view.CameraPreview;
 import tk.foodpedia.android.R;
@@ -35,12 +36,15 @@ public class ScannerFragment extends BaseFragment {
 
         final View v = inflater.inflate(R.layout.fragment_scanner, container, false);
 
-        v.findViewById(R.id.button_find_product).setOnClickListener(new OnClickListener() {
+        Button manualInput = (Button) v.findViewById(R.id.button_manual_input);
+        manualInput.getBackground().setColorFilter(getResources().getColor(R.color.primary), PorterDuff.Mode.MULTIPLY);
+
+        // TODO: invoke dialog
+        manualInput.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View button) {
                 button.setOnClickListener(null);
-                String barcode = ((EditText) v.findViewById(R.id.edit_text_barcode)).getText().toString();
-                scannerCallbacks.onScanCompleted(barcode);
+                scannerCallbacks.onScanCompleted("4600605012994");
             }
         });
 
