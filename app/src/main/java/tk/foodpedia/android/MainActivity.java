@@ -1,6 +1,7 @@
 package tk.foodpedia.android;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.app.Fragment;
@@ -14,8 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +38,9 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
         FRAGMENT_MENU_ID.put(HelpFragment.class, R.id.nav_help);
     }
 
+    private DrawerLayout drawerLayout;
     private NavigationView drawerMenu;
+    private FloatingActionButton fab;
 
     private boolean fabIsHidden = true;
     private boolean activityDestroyed = false;
@@ -52,13 +53,22 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, 0, 0);
-        drawer.addDrawerListener(toggle);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0);
+        drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
         drawerMenu = (NavigationView) findViewById(R.id.drawer_menu);
         drawerMenu.setNavigationItemSelectedListener(this);
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                if (fabIsHidden) return;
+                placeFragment(ScannerFragment.newInstance(), false);
+            }
+        });
 
         if (savedInstanceState == null) {
             placeFragment(ProductFragment.newInstance(null), true);
@@ -67,15 +77,9 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
             fabIsHidden = savedInstanceState.getBoolean(KEY_FAB_IS_HIDDEN);
         }
 
-        if (fabIsHidden) findViewById(R.id.fab).setVisibility(View.GONE);
-
-        findViewById(R.id.fab).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                if (fabIsHidden) return;
-                placeFragment(ScannerFragment.newInstance(), false);
-            }
-        });
+        if (fabIsHidden) {
+            fab.setVisibility(View.GONE);
+        }
     }
 
 
@@ -88,9 +92,8 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
             return;
         }
 
@@ -136,8 +139,7 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
                 break;
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -193,20 +195,13 @@ public class MainActivity extends AppCompatActivity implements ScannerCallbacks,
 
 
     protected void hideFab() {
-        if (fabIsHidden) return;
-        Animation disappear = AnimationUtils.makeOutAnimation(this, true);
-        disappear.setFillAfter(true);
-        findViewById(R.id.fab).startAnimation(disappear);
+        fab.hide();
         fabIsHidden = true;
     }
 
 
     protected void showFab() {
-        if (!fabIsHidden) return;
-        Animation appear = AnimationUtils.makeInAnimation(this, false);
-        appear.setFillAfter(true);
-        findViewById(R.id.fab).setVisibility(View.VISIBLE);
-        findViewById(R.id.fab).startAnimation(appear);
+        fab.show();
         fabIsHidden = false;
     }
 }
